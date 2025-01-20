@@ -20,7 +20,30 @@ def check_dir(dir):
 
 	return
 
-def process_cutset(i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method):
+def process_proj_mc(i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists):
+    iCutSets = f"{i:02d}"
+    if not ptweights_exists:
+        print(f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}\033[0m")
+        os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}")
+    else:
+        print(
+            f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
+            f"-w {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUDcent "
+            f"-wb {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUBcent "
+            f"-o {output_dir} -s {suffix}_{iCutSets} \033[0m"
+        )
+        os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
+                  f"-w {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUDcent "
+                  f"-wb {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUBcent "
+                  f"-o {output_dir} -s {suffix}_{iCutSets}")
+
+def process_efficiency_cutset(i, EffPath, config_flow, output_dir, suffix, cent):
+    iCutSets = f"{i:02d}"
+    print(f"\033[32mpython3 {EffPath} {config_flow} {output_dir}/proj_mc/proj_mc_{suffix}_{iCutSets}.root -c {cent} -o {output_dir} -s {suffix}_{iCutSets}\033[0m")
+    print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
+    os.system(f"python3 {EffPath} {config_flow} {output_dir}/proj_mc/proj_mc_{suffix}_{iCutSets}.root -c {cent} -o {output_dir} -s {suffix}_{iCutSets} --batch")
+
+def process_vn_cutset(i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method):
 	iCutSets = f"{i:02d}"
 	print(f"\033[32mpython3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method}\033[0m")
 	print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
@@ -102,23 +125,15 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/proj_mc")
 		ProjMcPath = "./proj_thn_mc.py"
 		
-		if not os.path.exists(f'{output_dir}/ptweights/pTweight_{suffix}.root'):
+		ptweights_exists = os.path.exists(f'{output_dir}/ptweights/pTweight_{suffix}.root')
+
+		with ProcessPoolExecutor() as executor:
+			futures = []
 			for i in range(nCutSets):
-				iCutSets = f"{i:02d}"
-				print(f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}\033[0m")
-				os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}")
-		else:
-			for i in range(nCutSets):
-				iCutSets = f"{i:02d}"
-				print(
-					f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
-					f"-w {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUDcent "
-					f"-wb {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUBcent "
-					f"-o {output_dir} -s {suffix}_{iCutSets} \033[0m"
-				)
-				os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml \
-						-w {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUDcent \
-						-wb {output_dir}/ptweights/pTweight_{suffix}.root hPtWeightsFONLLtimesTAMUBcent -o {output_dir} -s {suffix}_{iCutSets}")
+				futures.append(executor.submit(process_proj_mc, i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists))
+			
+			for future in futures:
+				future.result()
 
 	else:
 		print("\033[33mWARNING: Projection for MC will not be performed\033[0m")							
@@ -129,11 +144,14 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/eff")
 		EffPath = "./../compute_efficiency.py"
 
-		for i in range(nCutSets):
-			iCutSets = f"{i:02d}"
-			print(f"\033[32mpython3 {EffPath} {config_flow} {output_dir}/proj_mc/proj_mc_{suffix}_{iCutSets}.root -c {cent} -o {output_dir} -s {suffix}_{iCutSets}\033[0m")
-			print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
-			os.system(f"python3 {EffPath} {config_flow} {output_dir}/proj_mc/proj_mc_{suffix}_{iCutSets}.root -c {cent} -o {output_dir} -s {suffix}_{iCutSets} --batch")
+		max_workers = 8 # hyper parameter default: 1
+		with ProcessPoolExecutor() as executor:
+			futures = []
+			for i in range(nCutSets):
+				futures.append(executor.submit(process_efficiency_cutset, i, EffPath, config_flow, output_dir, suffix, cent))
+			
+			for future in futures:
+				future.result()
 	else:
 		print("\033[33mWARNING: Efficiency will not be performed\033[0m")
 
@@ -147,7 +165,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
-				futures.append(executor.submit(process_cutset, i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method))
+				futures.append(executor.submit(process_vn_cutset, i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method))
 			
 			for future in futures:
 				future.result()
