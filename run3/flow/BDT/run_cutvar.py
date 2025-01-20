@@ -20,6 +20,12 @@ def check_dir(dir):
 
 	return
 
+def process_cutset(i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method):
+	iCutSets = f"{i:02d}"
+	print(f"\033[32mpython3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method}\033[0m")
+	print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
+	os.system(f"python3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}_{iCutSets}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method} --batch")
+
 def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffix, vn_method, 
 						   skip_calc_weights=False,
 						   skip_make_yaml=False, 
@@ -136,14 +142,8 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 	if not skip_vn:
 		check_dir(f"{output_dir}/ry")
 		SimFitPath = "./../get_vn_vs_mass.py"
-
-		def process_cutset(i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method):
-			iCutSets = f"{i:02d}"
-			print(f"\033[32mpython3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method}\033[0m")
-			print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
-			os.system(f"python3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}_{iCutSets}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method} --batch")
-
-		max_workers = 8
+  
+		max_workers = 8 # hyper parameter default: 1
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
