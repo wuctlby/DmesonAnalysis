@@ -6,6 +6,7 @@ import yaml
 import shutil
 sys.path.append('..')
 from flow_analysis_utils import get_cut_sets_config
+from concurrent.futures import ProcessPoolExecutor
 
 def check_dir(dir):
 
@@ -136,11 +137,20 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/ry")
 		SimFitPath = "./../get_vn_vs_mass.py"
 
-		for i in range(nCutSets):
+		def process_cutset(i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method):
 			iCutSets = f"{i:02d}"
 			print(f"\033[32mpython3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method}\033[0m")
 			print(f"\033[32mProcessing cutset {iCutSets}\033[0m")
 			os.system(f"python3 {SimFitPath} {config_flow} {cent} {output_dir}/proj/proj_{suffix}_{iCutSets}.root -o {output_dir}/ry -s _{suffix}_{iCutSets} -vn {vn_method} --batch")
+
+		max_workers = 8
+		with ProcessPoolExecutor(max_workers) as executor:
+			futures = []
+			for i in range(nCutSets):
+				futures.append(executor.submit(process_cutset, i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method))
+			
+			for future in futures:
+				future.result()
 	else:
 		print("\033[33mWARNING: vn extraction will not be performed\033[0m")
 
