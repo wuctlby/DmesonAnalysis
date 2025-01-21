@@ -41,6 +41,7 @@ detC: 'TPCpos'
 # fit options
 Dmeson: 'Dplus'
 FixSigma: 0
+FixSigmaFromFile: ''
 SigmaFile: ''
 SigmaMultFactor: 1.
 FixMean: 0
