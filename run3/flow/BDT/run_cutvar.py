@@ -128,7 +128,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		
 		ptweights_exists = os.path.exists(f'{output_dir}/ptweights/pTweight_{suffix}.root')
 
-		max_workers = 1 # hyper parameter default: 1
+		max_workers = 16 # hyper parameter default: 1
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
@@ -147,7 +147,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/eff")
 		EffPath = "./../compute_efficiency.py"
 
-		max_workers = 1 # hyper parameter default: 1
+		max_workers = 16 # hyper parameter default: 1
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
@@ -165,7 +165,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/ry")
 		SimFitPath = "./../get_vn_vs_mass.py"
   
-		max_workers = 1 # hyper parameter default: 1
+		max_workers = 16 # hyper parameter default: 1
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
