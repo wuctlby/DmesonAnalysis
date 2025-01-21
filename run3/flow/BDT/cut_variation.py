@@ -123,7 +123,7 @@ def cut_var(config_flow, an_res_file, centrality, resolution, outputdir, suffix)
     nCutSets = max(CutSets)
 
     with alive_bar(nCutSets, title='Processing BDT cuts') as bar:
-        max_workers = 8 # hyper parameter default: 1
+        max_workers = 1 # hyper parameter default: 1
         with ProcessPoolExecutor(max_workers) as executor:
             futures = []
             for iCut in range(nCutSets):

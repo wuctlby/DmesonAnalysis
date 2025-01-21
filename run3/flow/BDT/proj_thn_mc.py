@@ -139,6 +139,18 @@ def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
                 hVarRefl, hVarReflPrompt, hVarReflFD, hVarPrompt, hVarFD = None, None, None, None, None
                 varName = 'Pt' if iVar == 'Pt' else 'Mass'
                 axisNum = cutVars[iVar]['axisnum']
+                
+                if iVar == 'Mass':
+                    massBinMin = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMin'][iPt] * 1.0001)
+                    massBinMax = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMax'][iPt] * 0.9999)
+                    sparseReco[refSparse].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    sparseReco['RecoPrompt'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    sparseReco['RecoFD'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    if enableRef:
+                        sparseReco['RecoRefl'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                        sparseReco['RecoReflPrompt'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                        sparseReco['RecoReflFD'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                
                 if 'RecoAll' in sparseReco:
                     hVar = sparseReco['RecoAll'].Projection(axisNum)
                     hVar.SetName(f'h{varName}_{ptLowLabel:.0f}_{ptHighLabel:.0f}')
@@ -264,13 +276,19 @@ def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
             # end of apply pt weights for reconstruction level
 
             # apply pt weights for generation level
+            ## pt bins
             binGenMin = sparseGen['GenPrompt'].GetAxis(0).FindBin(ptMin*1.0001)
             binGenMax = sparseGen['GenPrompt'].GetAxis(0).FindBin(ptMax*0.9999)
+            ## mass bins
+            # massBinGenmin = sparseGen['GenPrompt'].GetAxis(3).FindBin(config['MassMin'][iPt]*1.0001)
+            # massBinGenmax = sparseGen['GenPrompt'].GetAxis(3).FindBin(config['MassMax'][iPt]*0.9999)
             if particleName == 'Dzero':
                 sparseGen['GenPrompt'].GetAxis(3).SetRange(2, 2)  # make sure it is prompt
                 sparseGen['GenFD'].GetAxis(3).SetRange(3, 3)  # make sure it is non-prompt
             sparseGen['GenPrompt'].GetAxis(0).SetRange(binGenMin, binGenMax)
             sparseGen['GenFD'].GetAxis(0).SetRange(binGenMin, binGenMax)
+            # sparseGen['GenPrompt'].GetAxis(3).SetRange(massBinGenmin, massBinGenmax)
+            # sparseGen['GenFD'].GetAxis(3).SetRange(massBinGenmin, massBinGenmax)
 
             ## no pt weights
             if not ptweights and not ptweightsB:

@@ -80,9 +80,10 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
  
 	# copy the configuration file
 	config_suffix = 1
-	while os.path.exists(f'{output_dir}/config_flow_{suffix}_{config_suffix}.yml'):
+	os.makedirs(f'{output_dir}/config_flow', exist_ok=True)
+	while os.path.exists(f'{output_dir}/config_flow/config_flow_{suffix}_{config_suffix}.yml'):
 		config_suffix = config_suffix + 1
-	os.system(f'cp {config_flow} {output_dir}/config_flow_{suffix}_{config_suffix}.yml')
+	os.system(f'cp {config_flow} {output_dir}/config_flow/config_flow_{suffix}_{config_suffix}.yml')
 
 #___________________________________________________________________________________________________________________________
 	# calculate the pT weights
@@ -127,10 +128,12 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		
 		ptweights_exists = os.path.exists(f'{output_dir}/ptweights/pTweight_{suffix}.root')
 
-		with ProcessPoolExecutor() as executor:
+		max_workers = 1 # hyper parameter default: 1
+		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
 				futures.append(executor.submit(process_proj_mc, i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists))
+				sys.stdout.flush()
 			
 			for future in futures:
 				future.result()
@@ -144,11 +147,12 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/eff")
 		EffPath = "./../compute_efficiency.py"
 
-		max_workers = 8 # hyper parameter default: 1
-		with ProcessPoolExecutor() as executor:
+		max_workers = 1 # hyper parameter default: 1
+		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
 				futures.append(executor.submit(process_efficiency_cutset, i, EffPath, config_flow, output_dir, suffix, cent))
+				sys.stdout.flush()
 			
 			for future in futures:
 				future.result()
@@ -161,11 +165,12 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 		check_dir(f"{output_dir}/ry")
 		SimFitPath = "./../get_vn_vs_mass.py"
   
-		max_workers = 8 # hyper parameter default: 1
+		max_workers = 1 # hyper parameter default: 1
 		with ProcessPoolExecutor(max_workers) as executor:
 			futures = []
 			for i in range(nCutSets):
 				futures.append(executor.submit(process_vn_cutset, i, SimFitPath, config_flow, cent, output_dir, suffix, vn_method))
+				sys.stdout.flush()
 			
 			for future in futures:
 				future.result()
