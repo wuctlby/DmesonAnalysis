@@ -141,12 +141,12 @@ def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
                 axisNum = cutVars[iVar]['axisnum']
                 
                 if iVar == 'Mass':
-                    massBinMin = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMin'][iPt] * 1.0001)
-                    massBinMax = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMax'][iPt] * 0.9999)
-                    sparseReco[refSparse].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
-                    sparseReco['RecoPrompt'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
-                    sparseReco['RecoFD'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    # sparseReco[refSparse].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    # sparseReco['RecoPrompt'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
+                    # sparseReco['RecoFD'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
                     if enableRef:
+                        massBinMin = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMin'][iPt] * 1.0001)
+                        massBinMax = sparseReco[refSparse].GetAxis(axisNum).FindBin(config['MassMax'][iPt] * 0.9999)
                         sparseReco['RecoRefl'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
                         sparseReco['RecoReflPrompt'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)
                         sparseReco['RecoReflFD'].GetAxis(axisNum).SetRange(massBinMin, massBinMax)

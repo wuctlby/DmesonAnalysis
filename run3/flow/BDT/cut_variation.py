@@ -122,19 +122,17 @@ def cut_var(config_flow, an_res_file, centrality, resolution, outputdir, suffix)
     CutSets, sig_cut_lower, sig_cut_upper, bkg_cut_lower, bkg_cut_upper = get_cut_sets_config(config_flow)
     nCutSets = max(CutSets)
 
-    with alive_bar(nCutSets, title='Processing BDT cuts') as bar:
-        max_workers = 16 # hyper parameter default: 1
-        with ProcessPoolExecutor(max_workers) as executor:
-            futures = []
-            for iCut in range(nCutSets):
-                futures.append(executor.submit(process_bdt_cut, iCut, outputdir, suffix, cent_min, cent_max, pt_mins, pt_maxs, 
-                                               CutSets, sig_cut_lower, sig_cut_upper, bkg_cut_lower, bkg_cut_upper, 
-                                               thnsparse_selcent_list, inv_mass_bins, axis_pt, axis_bdt_bkg, axis_bdt_sig, axis_mass, 
-                                               axis_sp, reso, histo_reso))
-            
-            for future in futures:
-                future.result()
-                bar()
+    max_workers = 16 # hyper parameter default: 1
+    with ProcessPoolExecutor(max_workers) as executor:
+        print(f'Processing {nCutSets} BDT cut sets')
+        futures = []
+        for iCut in range(nCutSets):
+            futures.append(executor.submit(process_bdt_cut, iCut, outputdir, suffix, cent_min, cent_max, pt_mins, pt_maxs, 
+                                            CutSets, sig_cut_lower, sig_cut_upper, bkg_cut_lower, bkg_cut_upper, 
+                                            thnsparse_selcent_list, inv_mass_bins, axis_pt, axis_bdt_bkg, axis_bdt_sig, axis_mass, 
+                                            axis_sp, reso, histo_reso))         
+        for future in futures:
+            future.result()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Arguments")
