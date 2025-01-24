@@ -152,7 +152,6 @@ def check_anres(config, an_res_file, centrality, resolution,
     cent_min = cent_bins[0]
     cent_max = cent_bins[1]
     
-    # 选择中心性区间
     thnsparse_selcent_list = []
     for thnssparse in thnsparse_list:
         thnsparse_selcent_list.append(thnssparse.Clone(f'thnsparse_selcent{cent_min}_{cent_max}'))
