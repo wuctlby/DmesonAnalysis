@@ -42,7 +42,8 @@ export sv2vf=False # True or False (skip v2 vs fraction)
 
 # Setup logging
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOG_FILE="${output_dir}/cutvar_${suffix}/${TIMESTAMP}.log"
+mkdir -p "${output_dir}/cutvar_${suffix}/logs"
+LOG_FILE="${output_dir}/cutvar_${suffix}/logs/log_${TIMESTAMP}.log"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 echo "Starting run_cutvar.sh at $(date)"
