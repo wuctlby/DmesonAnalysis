@@ -39,6 +39,16 @@ export sfcv=False # True or False (skip fraction by cut variation)
 export sddf=False # True or False (skip fraction by data-driven method)
 export sv2vf=False # True or False (skip v2 vs fraction)
 
+
+# Setup logging
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="${output_dir}/cutvar_${suffix}/${TIMESTAMP}.log"
+exec > >(tee -a "${LOG_FILE}") 2>&1
+
+echo "Starting run_cutvar.sh at $(date)"
+echo "Logging to: ${LOG_FILE}"
+
+
 if [ $spw = False ]; then
 	export skip_calc_weights=""
 else
@@ -103,3 +113,8 @@ python3 run_cutvar.py $config_flow $anres_dir -c $cent -r $res_file -o $output_d
 						$skip_frac_cut_var \
 						$skip_data_driven_frac \
 						$skip_v2_vs_frac
+
+echo "Completed run_cutvar.sh at $(date)"
+echo "Log saved to: ${LOG_FILE}"
+
+python3 /home/wuct/ALICE/local/DmesonAnalysis/run3/tool/clean_logs.py $LOG_FILE
