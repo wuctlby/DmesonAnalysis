@@ -84,6 +84,14 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 	while os.path.exists(f'{output_dir}/config_flow/config_flow_{suffix}_{config_suffix}.yml'):
 		config_suffix = config_suffix + 1
 	os.system(f'cp {config_flow} {output_dir}/config_flow/config_flow_{suffix}_{config_suffix}.yml')
+ 
+	# backup the results into history
+	file_to_check = f"{output_dir}/V2VsFrac/V2VsFrac_{suffix}.root"
+	if os.path.exists(file_to_check):
+		for sub_path in ['ry', 'CutVarFrac', 'V2VsFrac']:
+			os.system(f"mkdir -p {output_dir}/history/{config_suffix}/{sub_path}")
+			os.system(f"cp {output_dir}/{sub_path}/* {output_dir}/history/{config_suffix}/{sub_path}")
+		os.system(f"cp {output_dir}/config_flow/config_flow_{suffix}_{config_suffix-1}.yml {output_dir}/history/{config_suffix}")
 
 #___________________________________________________________________________________________________________________________
 	# calculate the pT weights
