@@ -56,12 +56,19 @@ def process_pt_bin(pt_min, pt_max, cent_min, cent_max, thnsparse_selcent_list, c
         for iThn, thnsparse_selcent in enumerate(thnsparse_selcent_list):
             hist_mass_temp = thnsparse_selcent.Projection(axis_mass)
             hist_mass_temp.SetName(f'hist_mass_cent{cent_min}_{cent_max}_pt{pt_min}_{pt_max}_{iThn}')
+            hist_fd_temp = thnsparse_selcent.Projection(axis_bdt_sig)
+            hist_fd_temp.SetName(f'hist_fd_cent{cent_min}_{cent_max}_pt{pt_min}_{pt_max}_{iThn}')
             if iThn == 0:
                 hist_mass = hist_mass_temp.Clone(f'hist_mass_cent{cent_min}_{cent_max}_pt{pt_min}_{pt_max}')
                 hist_mass.SetDirectory(0)
                 hist_mass.Reset()
+                hist_fd = hist_fd_temp.Clone(f'hist_fd_cent{cent_min}_{cent_max}_pt{pt_min}_{pt_max}')
+                hist_fd.SetDirectory(0)
+                hist_fd.Reset()
             hist_mass.Add(hist_mass_temp)
+            hist_fd.Add(hist_fd_temp)
         output_histograms['hist_mass'] = hist_mass
+        output_histograms['hist_fd'] = hist_fd
     
     if config['axes'].get('occupancy'):
         hist_occ = get_occupancy(thnsparse_selcents, config['axes']['occupancy'], False)
