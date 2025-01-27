@@ -15,12 +15,12 @@ ptmaxs: [1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 10, 12, 16, 24] #, 36, 50] #, 50]
     # 'occ': 6
 
 axestokeep: [0, 1, 2, 3, 4, 5]
-outputDir: '/home/wuct/ALICE/local/Results/BDT/k6080'
+outputDir: '/home/wuct/ALICE/local/Results/BDT/k3050'
 
 # config_flow: '/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/Results/2060/k3050/large/sp/config/config_flow_3050l_full.yml'
-centrality: 'k6080'
+centrality: 'k3050'
 # resolution: '/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resospk3050_inte.root'
-resolution: '/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resospk6080.root'
+resolution: '/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resosp3050l_PASS4_full_PbPb_Reso.root'
 
 #______________________________________________________________________________________________________________________________________________________
 # used for the fit
@@ -55,7 +55,7 @@ inv_mass_bins: [ #[1.72,1.76,1.80,1.82,1.83,1.84,1.85,1.86,1.87,1.88,1.89,1.90,1
 use_inv_mass_bins: false # use binning in invariant mass distribution, neglects inv_mass_bins (default: false)
 
 apply_btd_cuts: True # apply bdt cuts
-bkg_ml_cuts: [0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008, 0.008] # max probability for bkg, one for each pt bin
+bkg_ml_cuts: [0.002, 0.002, 0.001, 0.001, 0.001, 0.001, 0.003, 0.003, 0.005, 0.005, 0.008, 0.008, 0.008, 0.008] # max probability for bkg, one for each pt bin
 sig_ml_cuts: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]       # min probability for sig, one for each pt bin
 
 # ep/sp subevents
