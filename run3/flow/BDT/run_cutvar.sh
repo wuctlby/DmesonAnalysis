@@ -21,13 +21,26 @@
 #----------
 
 # export config_flow="/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config_flow.yml"
-export config_flow="/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config_flow_Dzero.yml"
-export anres_dir="/home/wuct/ALICE/local/Results/BDT/full/pre/AnRes/AnalysisResults_pt4.root"
-export output_dir="/home/wuct/ALICE/local/Results/BDT/full/uncorrelated"
-export cent="k3050"
+export config_flow="/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config_flow_D0_Single_pT_6080.yml"
+export anres_dir="/home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt0.root"
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt1.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt2.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt3.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt4.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt5.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt6.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt7.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt8.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt9.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt10.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt11.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt12.root \
+# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt13.root"
+export output_dir="/home/wuct/ALICE/local/Results/BDT/k6080/full/correlated"
+export cent="k6080"
 export vn_method="sp"
-export res_file="/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resospk3050_inte.root"
-export suffix="pt3d5_4"
+export res_file="/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resospk6080.root"
+export suffix="pt1_1d5"
 
 export spw=False # True or False (skip calculation of weights)
 export smy=False # True or False (skip make yaml)
