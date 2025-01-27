@@ -75,6 +75,7 @@ def process_pt_bin(pt_min, pt_max, cent_min, cent_max, thnsparse_selcent_list, c
         hist_evselbits.SetDirectory(0)
         output_histograms['hist_evselbits'] = hist_evselbits
     
+    print(f'Processed pt bin {pt_min} - {pt_max}')
     return output_histograms
 
 def check_anres(config, an_res_file, centrality, resolution,
