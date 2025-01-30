@@ -16,7 +16,6 @@
 
 workdir=/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/
 config=/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/Results/2060/k3050/large/sp/config/config_flow_3050l_PASS4_full_PbPb.yml
-#config=/home/wuct/localAnalysis/flow/DmesonAnalysis/run3/flow/Results/2060/k3050/large/sp/config/config_flow_3050l__set3_pol2_2_16.yml
 
 centrality=k3050 # k020 k3050 k6080  <-----------------------------------------------------------------------------------------------
 dataCent=2060 # 020 2060 50100   <---------------------------------------------------------------------------------------------------
@@ -29,10 +28,6 @@ wagon_id= # 13649 14351 13650 14352    <----------------------------------------
 doReso=false # false true    <-------------------------------------------------------------------------------------------------------
 doProj=false # false true
 
-# an_res_file="/media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/k6080/full/temp_merged_s2_0.root \
-# /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/k6080/full/temp_merged_s2_1.root \
-# /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/k6080/full/temp_merged_s2_2.root \
-# /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/k6080/full/temp_merged_s2_3.root"
 an_res_file="/media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_merged_s3_0.root \
 /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_merged_s3_1.root \
 /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_merged_s3_2.root \
@@ -42,7 +37,7 @@ an_res_file="/media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_
 /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_merged_s3_6.root \
 /media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/324130/temp_merged_s3_7.root
 "
-# an_res_file=/media/wuct/wulby/ALICE/AnRes/D0_flow/pass4/ML/Results/CombPID_3SigCut_AND/AnalysisResults_data_goldenRun.root
+
 resolution=/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resosp3050l_PASS4_full_PbPb_Reso.root
 
 if [ ! -z "$wagon_id" ]; then wagon="-w ${wagon_id}" ; else wagon="" ; fi
