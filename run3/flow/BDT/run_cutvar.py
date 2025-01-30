@@ -22,16 +22,17 @@ def check_dir(dir):
 
 def process_proj_mc(i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists):
     iCutSets = f"{i:02d}"
+    # TODO: load the path and bool from the config file
+    given_weights = False
+    if given_weights:
+        ptweights_exists = True
+        ptweightsPath = '/home/wuct/ALICE/local/Results/BDT/k3050/full/uncorrelated/cutvar_pt1_4/ptweights/pTweight_pt1_4.root'
+    else:
+        ptweightsPath = f'{output_dir}/ptweights/pTweight_{suffix}.root'
     if not ptweights_exists:
         print(f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}\033[0m")
         os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml -o {output_dir} -s {suffix}_{iCutSets}")
     else:
-        # TODO: load the path and bool from the config file
-        given_weights = False
-        if given_weights:
-            ptweightsPath = '/home/wuct/ALICE/local/Results/BDT/k3050/full/uncorrelated/cutvar_pt1_4/ptweights/pTweight_pt1_4.root'
-        else:
-            ptweightsPath = f'{output_dir}/ptweights/pTweight_{suffix}.root'
         print(
             f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
             f"-w {ptweightsPath} hPtWeightsFONLLtimesTAMUDcent "
