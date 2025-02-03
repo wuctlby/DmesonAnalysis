@@ -143,7 +143,6 @@ if __name__ == "__main__":
             preFiles = [f'{outputDir}/pre/AnRes/AnalysisResults_pt{iFile}.root' for iFile in range(len(ptmins))]
         else:
             raise ValueError(f'No eff fodel found in {outputDir}')
-        preFiles.sort()
         
         # you have to know the sigma from the differet prompt enhance samples is stable first
         get_sigma(preFiles, args.config_pre, centrality, resolution, outputDir, skip_projection=args.skip_projection)

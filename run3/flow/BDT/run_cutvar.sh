@@ -20,29 +20,29 @@
 #- skip_v2_vs_frac (bool): skip v2 vs FD fraction
 #----------
 
-export config_flow="/home/wuct/ALICE/local/Results/BDT/k6080/full/uncorrelated/cutvar_pt12_24/config_flow/config_flow_pt12_24_3.yml" # <-----------------------------------------------------------------------------------------------
-# export anres_dir="/home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt0.root"
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt1.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt2.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt3.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt4.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt5.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt6.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt7.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt8.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt9.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt10.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt11.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt12.root \
-# /home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt13.root"
-export anres_dir="/home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt12.root \
-/home/wuct/ALICE/local/Results/BDT/k6080/pre/AnRes/AnalysisResults_pt13.root
+export config_flow="/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config/config_flow_D0_3050_corr.yml" # <-----------------------------------------------------------------------------------------------
+export anres_dir="/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt0.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt1.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt2.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt3.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt4.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt5.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt6.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt7.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt8.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt9.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt10.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt11.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt12.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt13.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt14.root \
+/home/wuct/ALICE/local/Results/BDT/k3050/pre/AnRes/AnalysisResults_pt15.root
 " # <-----------------------------------------------------------------------------------------------
-export output_dir="/home/wuct/ALICE/local/Results/BDT/k6080/full/uncorrelated"
-export cent="k6080"
+export output_dir="/home/wuct/ALICE/local/Results/BDT/k3050/full/correlated_pass3"
+export cent="k3050"
 export vn_method="sp"
-export res_file="/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resosp6080l_PASS4_full_PbPb_Reso.root"
-export suffix="pt12_24" # <-----------------------------------------------------------------------------------------------
+export res_file="/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resosp3050l_PASS4_full_PbPb_Reso.root"
+export suffix="pass3" # <-----------------------------------------------------------------------------------------------
 
 export spw=False # True or False (skip calculation of weights)
 export smy=False # True or False (skip make yaml)
