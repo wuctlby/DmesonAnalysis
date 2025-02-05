@@ -16,6 +16,24 @@ sys.path.append('../')
 from flow_analysis_utils import get_particle_info, get_cut_sets_config
 from utils.StyleFormatter import SetGlobalStyle, SetObjectStyle, GetROOTColor
 
+def load_v2_files(inputdir, suffix):
+    if os.path.exists(f'{inputdir}/ry'):
+        v2Files = [f'{inputdir}/ry/{file}'
+                    for file in os.listdir(f'{inputdir}/ry') if file.endswith('.root') and suffix in file]
+        v2Files.sort()
+    else:
+        raise ValueError(f'No ry folder found in {inputdir}')
+    return v2Files
+
+def load_frac_files(inputdir, suffix):
+    if os.path.exists(f'{inputdir}/DataDrivenFrac'):
+        fracFiles = [f'{inputdir}/DataDrivenFrac/{file}'
+                        for file in os.listdir(f'{inputdir}/DataDrivenFrac') if file.endswith('.root') and suffix in file]
+        fracFiles.sort()
+    else:
+        raise ValueError(f'No DataDrivenFrac folder found in {inputdir}')
+    return fracFiles
+
 def set_frame_style(canv, Title, particleTit):
     hFrame = canv.DrawFrame(0.0, -0.2, 1, 0.35, f"{Title};Non-prompt {particleTit} fraction; #it{{v}}_{{2}}^{{#it{{obs}}}}")
     hFrame.GetYaxis().SetDecimals()
@@ -29,7 +47,7 @@ def set_frame_style(canv, Title, particleTit):
     hFrame.GetXaxis().SetTitleOffset(1.4)
     hFrame.GetYaxis().SetNdivisions(505)
 
-def v2_vs_frac(config_flow, inputdir, outputdir, suffix):
+def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
 
     with open(config_flow, 'r') as ymlCfgFile:
         config = yaml.load(ymlCfgFile, yaml.FullLoader)
@@ -47,21 +65,6 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix):
     
     CutSets, _, _, _, _ = get_cut_sets_config(config_flow)
     nCutSets = max(CutSets)
-
-    if os.path.exists(f'{inputdir}/DataDrivenFrac'):
-        fracFiles = [f'{inputdir}/DataDrivenFrac/{file}'
-                        for file in os.listdir(f'{inputdir}/DataDrivenFrac') if file.endswith('.root') and suffix in file]
-    else:
-        raise ValueError(f'No DataDrivenFrac folder found in {inputdir}')
-
-    if os.path.exists(f'{inputdir}/ry'):
-        v2Files = [f'{inputdir}/ry/{file}'
-                    for file in os.listdir(f'{inputdir}/ry') if file.endswith('.root') and suffix in file]
-    else:
-        raise ValueError(f'No ry folder found in {inputdir}')
-
-    fracFiles.sort()
-    v2Files.sort()
 
     if len(fracFiles) != len(v2Files):
         raise ValueError('Number of eff and frac files do not match')
@@ -229,6 +232,25 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix):
     cV2VsPtPrompt.SaveAs(f"{outputdir}/V2VsFrac/V2VsPtPrompt_{suffix}.pdf")
     cPromptAndFDV2.SaveAs(f"{outputdir}/V2VsFrac/V2VsPtPromptAndFD_{suffix}.pdf")
 
+def main_v2_vs_frac(config, inputdir, outputdir, suffix, combined=False, inputdir_combined='', outputdir_combined=''):
+
+    v2_vs_frac(
+        config,
+        inputdir,
+        outputdir,
+        suffix,
+        load_frac_files(inputdir, suffix),
+        load_v2_files(inputdir, suffix)
+    )
+    if combined:
+        v2_vs_frac(
+            config,
+            inputdir_combined,
+            outputdir_combined,
+            suffix,
+            load_frac_files(inputdir_combined, suffix),
+            load_v2_files(inputdir, suffix)
+        )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Arguments')
@@ -240,11 +262,20 @@ if __name__ == "__main__":
                         default=".", help="output directory")
     parser.add_argument("--suffix", "-s", metavar="text",
                         default="", help="suffix for output files")
+    parser.add_argument("--combined", '-comb', metavar='bool', required=False,
+                        action='store_true', help="combined method")
+    parser.add_argument("--inputdir_combined", "-ic", metavar="text", required=False,
+                        default="", help="input directory containing the frac files for the combined method")
+    parser.add_argument("--output_combined", "-oc", metavar="text", required=False,
+                        default="", help="output directory for the combined method")
     args = parser.parse_args()
 
-    v2_vs_frac(
+    main_v2_vs_frac(
         args.config,
         args.inputdir,
         args.outputdir,
-        args.suffix
+        args.suffix,
+        combined=args.combined if args.combined else False,
+        inputdir_combined=args.inputdir_combined if args.combined else '',
+        outputdir_combined=args.output_combined if args.combined else ''
     )

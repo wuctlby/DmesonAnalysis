@@ -6,6 +6,8 @@ import yaml
 import shutil
 sys.path.append('..')
 from flow_analysis_utils import get_cut_sets_config
+from ComputeDataDriFrac_flow import main_data_driven_frac
+from ComputeV2vsFDFrac import main_v2_vs_frac
 from concurrent.futures import ProcessPoolExecutor
 
 def check_dir(dir):
@@ -69,8 +71,8 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
 
 #___________________________________________________________________________________________________________________________
     # Load and copy the configuration file
-    # with open(config_flow, 'r') as cfgFlow:
-    # 	config = yaml.safe_load(cfgFlow)
+    with open(config_flow, 'r') as cfgFlow:
+        config = yaml.safe_load(cfgFlow)
     
     CutSets, _, _, _, _ = get_cut_sets_config(config_flow)
     nCutSets = max(CutSets)
@@ -162,7 +164,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
         check_dir(f"{output_dir}/eff")
         EffPath = "./../compute_efficiency.py"
 
-        max_workers = 16 # hyper parameter default: 1
+        max_workers = 32 # hyper parameter default: 1
         with ProcessPoolExecutor(max_workers) as executor:
             futures = []
             for i in range(nCutSets):
@@ -180,7 +182,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
         check_dir(f"{output_dir}/ry")
         SimFitPath = "./../get_vn_vs_mass.py"
   
-        max_workers = 16 # hyper parameter default: 1
+        max_workers = 32 # hyper parameter default: 1
         with ProcessPoolExecutor(max_workers) as executor:
             futures = []
             for i in range(nCutSets):
@@ -208,9 +210,38 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
     if not skip_data_driven_frac:
         check_dir(f"{output_dir}/DataDrivenFrac")
         DataDrivenFracPath = "./ComputeDataDriFrac_flow.py"
+        
+        combined = config['combined'] if 'combined' in config else False
+        print(f"\033[32mCombined method: {combined}\033[0m")
+        if combined:
+            if config['minimisation']['correlated']:
+                print("\033[31mOnly support combined method when the minimisation is uncorrelated\033[0m")
+                print("\033[31mThe combined method will not be performed\033[0m")
+                # run the data-driven method with the corelated results
+                print(f"\033[32mpython3 {DataDrivenFracPath} -i {output_dir} -o {output_dir} -s {suffix} -b\033[0m")
+                main_data_driven_frac(inputdir=output_dir, outputdir=output_dir, suffix=suffix, batch=True, combined=False)
+            else:
+                # the path of corresponding results with correlated cut method
+                correlatedPath = config['correlatedPath'] if 'correlatedPath' in config else ''
+                if correlatedPath == '':
+                    print("\033[31mPlease provide the path to the corresponding correlated cut method\033[0m")
+                    correlatedPath = input("Path(`output_dir` in run_cutvar.sh): ")
+                correlatedCutVarPath = correlatedPath + '/cutvar_' + suffix
+                
+                # the path of the combined results
+                outputdir_corr = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
+                check_dir(f"{outputdir_corr}/DataDrivenFrac")
+                
+                # run the data-driven method with the combined results and the uncorrelated results
+                print(f"\033[32mpython3 {DataDrivenFracPath} -i {output_dir} -o {output_dir} -s {suffix} -b -comb -cc {correlatedCutVarPath} -oc {outputdir_corr}\033[0m") 
+                main_data_driven_frac(inputdir=output_dir, outputdir=output_dir, suffix=suffix, batch=True, \
+                                        combined=True, correlatedCutVarPath=correlatedCutVarPath, outputdir_combined=outputdir_corr)
 
-        print(f"\033[32mpython3 {DataDrivenFracPath} -i {output_dir} -o {output_dir} -s {suffix}\033[0m")
-        os.system(f"python3 {DataDrivenFracPath} -i {output_dir} -o {output_dir} -s {suffix} --batch")
+        # run the data-driven method with the uncorrelated or correlated results
+        else:
+            print(f"\033[32mpython3 {DataDrivenFracPath} -i {output_dir} -o {output_dir} -s {suffix} -b\033[0m")
+            main_data_driven_frac(inputdir=output_dir, outputdir=output_dir, suffix=suffix, batch=True, combined=False)
+
     else:
         print("\033[33mWARNING: Fraction by Data-driven method will not be performed\033[0m")
 
@@ -219,9 +250,21 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
     if not skip_v2_vs_frac:
         check_dir(f"{output_dir}/V2VsFrac")
         v2vsFDFracPath = "./ComputeV2vsFDFrac.py"
-
-        print(f"\033[32mpython3 {v2vsFDFracPath} {config_flow} -i {output_dir} -o {output_dir} -s {suffix}\033[0m")
-        os.system(f"python3 {v2vsFDFracPath} {config_flow} -i {output_dir} -o {output_dir} -s {suffix}")
+        
+        combined = config['combined'] if 'combined' in config else False
+        
+        if combined:
+            inputdir_combined = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
+            outputdir_combined = inputdir_combined
+            check_dir(f"{outputdir_combined}/V2VsFrac")
+            
+            print(f"\033[32mthe combined method will be performed\033[0m")
+            print(f"\033[32mpython3 {v2vsFDFracPath} {config_flow} -i {output_dir} -o {output_dir} -s {suffix} -comb -ic {inputdir_combined} -oc {outputdir_combined}\033[0m")
+            main_v2_vs_frac(config=config_flow, inputdir=output_dir, outputdir=output_dir, suffix=suffix, \
+                                combined=True, inputdir_combined=inputdir_combined, outputdir_combined=outputdir_combined)
+        else:
+            print(f"\033[32mpython3 {v2vsFDFracPath} {config_flow} -i {output_dir} -o {output_dir} -s {suffix}\033[0m")
+            main_v2_vs_frac(config=config_flow, inputdir=output_dir, outputdir=output_dir, suffix=suffix, combined=False)
     else:
         print("\033[33mWARNING: v2 vs fraction will not be performed\033[0m")
     
