@@ -376,17 +376,17 @@ def get_vn_vs_mass(fitConfigFileName, centClass, inFileName,
             if fixSigma[iPt]:
                 if fixSigmaFromFile != '':
                     sigmaFile = TFile.Open(fixSigmaFromFile)
-                    hSigmaFromFile = sigmaFile.Get('hSigmaSimFit')
+                    hSigmaFromFile = sigmaFile.Get('hRawYieldsSigma')
                     hSigmaFromFile.SetDirectory(0)
                     sigmaBin = hSigmaFromFile.FindBin((ptMin+ptMax)/2)
                     if hSigmaFromFile.GetBinLowEdge(sigmaBin) != ptMin:
                         print(f'ERROR: bin edges do not match! Exit!')
                         sys.exit()
                     print(f'Fixing sigma from file: {hSigmaFromFile.GetBinContent(sigmaBin)}')
-                    vnFitter[iPt].SetInitialGaussianSigma(hSigmaFromFile.GetBinContent(sigmaBin), 1)
+                    vnFitter[iPt].SetInitialGaussianSigma(hSigmaFromFile.GetBinContent(sigmaBin), 2)
                 else:
-                    vnFitter[iPt].SetInitialGaussianSigma(fitConfig['Sigma'][iPt], 1)
-                vnFitter[iPt].FixSigmaFromMassFit()
+                    vnFitter[iPt].SetInitialGaussianSigma(fitConfig['Sigma'][iPt], 2)
+                # vnFitter[iPt].FixSigmaFromMassFit()
             else:
                 vnFitter[iPt].SetInitialGaussianSigma(fitConfig['Sigma'][iPt], 1)
             # nSigma4SB

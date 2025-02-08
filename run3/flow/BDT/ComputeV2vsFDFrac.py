@@ -35,7 +35,11 @@ def load_frac_files(inputdir, suffix):
     return fracFiles
 
 def set_frame_style(canv, Title, particleTit):
-    hFrame = canv.DrawFrame(0.0, -0.2, 1, 0.35, f"{Title};Non-prompt {particleTit} fraction; #it{{v}}_{{2}}^{{#it{{obs}}}}")
+    canv.SetLeftMargin(0.15)
+    canv.SetRightMargin(0.05)
+    canv.SetBottomMargin(0.15)
+    canv.SetTopMargin(0.05)
+    hFrame = canv.DrawFrame(0.0, -0.2, 1, 0.35, f";Non-prompt {particleTit} fraction; #it{{v}}_{{2}}^{{#it{{obs}}}}")
     hFrame.GetYaxis().SetDecimals()
     hFrame.GetYaxis().SetNoExponent()
     hFrame.GetXaxis().SetMoreLogLabels()
@@ -46,6 +50,12 @@ def set_frame_style(canv, Title, particleTit):
     hFrame.GetXaxis().SetLabelSize(0.04)
     hFrame.GetXaxis().SetTitleOffset(1.4)
     hFrame.GetYaxis().SetNdivisions(505)
+
+def set_frame_margin(canv):
+    canv.SetLeftMargin(0.15)
+    canv.SetRightMargin(0.05)
+    canv.SetBottomMargin(0.15)
+    canv.SetTopMargin(0.05)
 
 def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
 
@@ -142,7 +152,7 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
         #TODO: plot the v2 vs pt, and the center of the pt bin is calculate by the average of pT
 
         ptStrings.append(f"{ptMin:.1f} < #it{{p}}_{{T}} < {ptMax:.1f} GeV/#it{{c}}")
-        chi2Strings.append(f"#chi^{{2}}/n.d.f = {chi2/ndf:.2f}")
+        chi2Strings.append(f"#chi^{{2}}/n.d.f = {chi2:.2f}/{ndf:.2f}")
 
 
     # save the results
@@ -164,12 +174,12 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
         if nPtBins == 1:
             suffix_pdf = ''
 
-        cFrac.append(TCanvas(f"cFrac_{ptStrings[iPt]}", "", 1200, 1200))
+        cFrac.append(TCanvas(f"cFrac_{ptMin}_{ptMax}", "", 1200, 1200))
         set_frame_style(cFrac[-1], ptStrings[iPt], particleTit)
 
         t.SetTextSize(0.04)
-        t.DrawLatex(0.18, 0.74, decay)
-        t.DrawLatex(0.18, 0.67, f"{ptStrings[iPt]}")
+        t.DrawLatex(0.25, 0.85, decay)
+        t.DrawLatex(0.25, 0.78, f"{ptStrings[iPt]}")
         t.SetTextSize(0.035)
         t.DrawLatex(0.250, 0.23, f'{chi2Strings[iPt]}')
 
@@ -180,10 +190,11 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
         hV2VsFrac[iPt].Write()
 
         cFrac[-1].Update()
+        cFrac[-1].Write()
 
         cFrac[iPt].SaveAs(f"{outputdir}/V2VsFrac/FracV2_{suffix}.pdf{suffix_pdf}")
 
-    PtTit = "#it{p}_{T} GeV/#it{c}"
+    PtTit = "#it{p}_{T}GeV/#it{c}"
     leg = TLegend(0.55, 0.75, 0.88, 0.89)
     leg.SetTextSize(0.045)
     leg.SetBorderSize(0)
@@ -193,8 +204,8 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
     # SetObjectStyle(hV2VsPtFD, GetROOTColor("kAzure+4"), 1)
     # SetObjectStyle(hV2VsPtPrompt, GetROOTColor("kRed+1"), 1)
 
-    cV2VsPtFD = TCanvas("cV2VsPtFD", "non-prompt v2 versus pt")
-    cV2VsPtFD.SetCanvasSize(800, 800)
+    cV2VsPtFD = TCanvas("cV2VsPtFD", "non-prompt v2 versus pt", 800, 800)
+    set_frame_margin(cV2VsPtFD)    
     cV2VsPtFD.cd()
     hV2VsPtFD.Draw("")
     hV2VsPtFD.GetXaxis().SetTitle(PtTit)
@@ -204,8 +215,8 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
     hV2VsPtFD.SetMarkerSize(2)
     hV2VsPtFD.GetYaxis().SetNoExponent()
 
-    cV2VsPtPrompt = TCanvas("cV2VsPtPrompt", "prompt v2 versus pt")
-    cV2VsPtPrompt.SetCanvasSize(800, 800)
+    cV2VsPtPrompt = TCanvas("cV2VsPtPrompt", "prompt v2 versus pt", 800, 800)
+    set_frame_margin(cV2VsPtPrompt)
     cV2VsPtPrompt.cd()
     hV2VsPtPrompt.Draw("")
     hV2VsPtPrompt.GetXaxis().SetTitle(PtTit)
@@ -215,8 +226,8 @@ def v2_vs_frac(config_flow, inputdir, outputdir, suffix, fracFiles, v2Files):
     hV2VsPtPrompt.SetMarkerSize(2)
     hV2VsPtPrompt.GetYaxis().SetNoExponent()
 
-    cPromptAndFDV2 = TCanvas("cPromptAndFDV2", "prompt and non-prompt v2 versus pt")
-    cPromptAndFDV2.SetCanvasSize(800, 800)
+    cPromptAndFDV2 = TCanvas("cPromptAndFDV2", "prompt and non-prompt v2 versus pt", 800, 800)
+    set_frame_margin(cPromptAndFDV2)
     cPromptAndFDV2.cd()
     hV2VsPtFD.GetYaxis().SetTitle("#it{v_{2}}")
     hV2VsPtFD.Draw("")
