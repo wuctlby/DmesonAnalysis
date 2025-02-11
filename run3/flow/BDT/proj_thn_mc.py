@@ -15,10 +15,12 @@ from alive_progress import alive_bar
 from scipy.interpolate import InterpolatedUnivariateSpline
 sys.path.append('../../..')
 from utils.TaskFileLoader import LoadSparseFromTask
+sys.path.append('../')
+from flow_analysis_utils import get_centrality_bins
 
 
 
-def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
+def proj_MC(config, cutsetConfig, cent, ptweights, ptweightsB, outputdir, suffix):
 
     with open(config, 'r') as ymlCfgFile:
         config = yaml.load(ymlCfgFile, yaml.FullLoader)
@@ -31,6 +33,7 @@ def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
     enableRef = config['enableRef']
     enableSecPeak = config['enableSecPeak']
     Bspeciesweights = config['Bspeciesweights'] if 'Bspeciesweights' in config else None
+    _, centMinMax = get_centrality_bins(cent)
 
     #TODO: safety checks for Dmeson reflecton and secondary peak
 
@@ -98,6 +101,11 @@ def proj_MC(config, cutsetConfig, ptweights, ptweightsB, outputdir, suffix):
 
             # apply pt weights for reconstruction level
             ## apply cuts
+            # apply the cent
+            for sparse in sparseReco:
+                sparseReco[sparse].GetAxis(10).SetRange(centMinMax[0], centMinMax[1])
+            for sparse in sparseGen:
+                sparseGen[sparse].GetAxis(5).SetRange(centMinMax[0], centMinMax[1])
             for iVar in cutVars:
                 if iVar == 'InvMass':
                     continue
@@ -405,6 +413,8 @@ if __name__ == "__main__":
                         default="config.yaml", help="flow configuration file")
     parser.add_argument('cutsetConfig', metavar='text',
                         default='cutsetConfig.yaml', help='cutset configuration file')
+    parser.add_argument("--centrality", "-c", metavar="text",
+                        default="k3050", help="centrality class")
     parser.add_argument("--ptweights", "-w", metavar="text", nargs=2, required=False,
                         default=[], help="path to pt weights file and histogram name")
     parser.add_argument("--ptweightsB", "-wb", metavar="text", nargs=2, required=False,
@@ -417,6 +427,7 @@ if __name__ == "__main__":
 
     proj_MC(config=args.config,
             cutsetConfig=args.cutsetConfig,
+            cent=args.centrality,
             ptweights=args.ptweights,
             ptweightsB=args.ptweightsB,
             outputdir=args.outputdir,

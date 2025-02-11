@@ -180,7 +180,7 @@ def compute_eff_thns(config_file, centclass, inputFile, outputdir, suffix, batch
 
     #_____________________________________________________________________________________
     # Check centrality selection
-    check_cent_sel(charm_hadron, centclass, infile)
+    # check_cent_sel(charm_hadron, centclass, infile)
 
     #_____________________________________________________________________________________
     # difne histograms

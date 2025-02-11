@@ -376,7 +376,8 @@ def get_vn_vs_mass(fitConfigFileName, centClass, inFileName,
             if fixSigma[iPt]:
                 if fixSigmaFromFile != '':
                     sigmaFile = TFile.Open(fixSigmaFromFile)
-                    hSigmaFromFile = sigmaFile.Get('hRawYieldsSigma')
+                    # get the sigma histo from config file
+                    hSigmaFromFile = sigmaFile.Get('hSigmaSimFit')
                     hSigmaFromFile.SetDirectory(0)
                     sigmaBin = hSigmaFromFile.FindBin((ptMin+ptMax)/2)
                     if hSigmaFromFile.GetBinLowEdge(sigmaBin) != ptMin:

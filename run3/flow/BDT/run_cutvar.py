@@ -22,13 +22,13 @@ def check_dir(dir):
 
     return
 
-def process_proj_mc(i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists):
+def process_proj_mc(i, ProjMcPath, config_flow, cent, output_dir, suffix, ptweights_exists):
     iCutSets = f"{i:02d}"
     # TODO: load the path and bool from the config file
     given_weights = False
     if given_weights:
         ptweights_exists = True
-        ptweightsPath = '/home/wuct/ALICE/local/Results/BDT/k3050/full/uncorrelated/cutvar_pt1_4/ptweights/pTweight_pt1_4.root'
+        ptweightsPath = '/home/wuct/ALICE/local/Results/BDT/k3050/approve_2_11/uncorrelated/cutvar_pt0d5_1/ptweights/pTweight_pt0d5_1.root'
     else:
         ptweightsPath = f'{output_dir}/ptweights/pTweight_{suffix}.root'
     if not ptweights_exists:
@@ -37,11 +37,13 @@ def process_proj_mc(i, ProjMcPath, config_flow, output_dir, suffix, ptweights_ex
     else:
         print(
             f"\033[32mpython3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
+            f"-c {cent} "
             f"-w {ptweightsPath} hPtWeightsFONLLtimesTAMUDcent "
             f"-wb {ptweightsPath} hPtWeightsFONLLtimesTAMUBcent "
             f"-o {output_dir} -s {suffix}_{iCutSets} \033[0m"
         )
         os.system(f"python3 {ProjMcPath} {config_flow} {output_dir}/config/cutset_{suffix}_{iCutSets}.yml "
+                  f"-c {cent} "
                   f"-w {ptweightsPath} hPtWeightsFONLLtimesTAMUDcent "
                   f"-wb {ptweightsPath} hPtWeightsFONLLtimesTAMUBcent "
                   f"-o {output_dir} -s {suffix}_{iCutSets}")
@@ -149,7 +151,7 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
         with ProcessPoolExecutor(max_workers) as executor:
             futures = []
             for i in range(nCutSets):
-                futures.append(executor.submit(process_proj_mc, i, ProjMcPath, config_flow, output_dir, suffix, ptweights_exists))
+                futures.append(executor.submit(process_proj_mc, i, ProjMcPath, config_flow, cent, output_dir, suffix, ptweights_exists))
                 sys.stdout.flush()
             
             for future in futures:
@@ -229,7 +231,10 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
                 correlatedCutVarPath = correlatedPath + '/cutvar_' + suffix
                 
                 # the path of the combined results
-                outputdir_corr = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
+                if 'pass3' in correlatedPath:
+                    outputdir_corr = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined_pass3')
+                else:
+                    outputdir_corr = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
                 check_dir(f"{outputdir_corr}/DataDrivenFrac")
                 
                 # run the data-driven method with the combined results and the uncorrelated results
@@ -254,7 +259,10 @@ def run_full_cut_variation(config_flow, anres_dir, cent, res_file, output, suffi
         combined = config['combined'] if 'combined' in config else False
         
         if combined:
-            inputdir_combined = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
+            if 'pass3' in output_dir:
+                inputdir_combined = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined_pass3')
+            else:
+                inputdir_combined = output_dir.replace(f'{output_dir.split("/")[-2]}', 'combined')
             outputdir_combined = inputdir_combined
             check_dir(f"{outputdir_combined}/V2VsFrac")
             
