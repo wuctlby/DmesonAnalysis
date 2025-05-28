@@ -3,16 +3,22 @@ Analysis utilities for flow analysis
 '''
 
 import ROOT
+from ROOT import TFile
 import os
 import sys
 import ctypes
+import yaml
 from itertools import combinations
 import numpy as np
+import pandas as pd
+import uproot
+import array
 import fitz  # PyMuPDF
 from PIL import Image
 import math
 import glob
 import re
+import shutil
 
 def get_vn_versus_mass(thnSparses, inv_mass_bins, mass_axis, vn_axis, debug=False):
     '''
@@ -324,8 +330,18 @@ def get_centrality_bins(centrality):
         - cent_label:
             str, centrality label
     '''
+    if centrality == 'k05':
+        return '0_5', [0, 5]
+    if centrality == 'k510':
+        return '5_10', [5, 10]
     if centrality == 'k010':
         return '0_10', [0, 10]
+    if centrality == 'k1015':
+        return '10_15', [10, 15]
+    if centrality == 'k1520':
+        return '15_20', [15, 20]
+    if centrality == 'k1020':
+        return '10_20', [10, 20]
     if centrality == 'k020':
         return '0_20', [0, 20]
     if centrality == 'k2030':
@@ -340,6 +356,12 @@ def get_centrality_bins(centrality):
         return '20_60', [20, 60]
     elif centrality == 'k4060':
         return '40_60', [40, 60]
+    elif centrality == 'k4080':
+        return '40_80', [40, 80]
+    elif centrality == 'k5060':
+        return '50_60', [50, 60]
+    elif centrality == 'k5080':
+        return '50_80', [50, 80]
     elif centrality == 'k6070':
         return '60_70', [60, 70]
     elif centrality == 'k6080':
@@ -455,7 +477,7 @@ def get_invmass_vs_deltaphi(thnSparses, deltaphiaxis, invmassaxis):
     
     return hist_invMass_in, hist_invMass_out
 
-def get_vnfitter_results(vnFitter, secPeak, useRefl, useTempl):
+def get_vnfitter_results(vnFitter, secPeak, useRefl, useTempl, DrawVnComps):
     '''
     Get vn fitter results:
     0: BkgInt
@@ -528,17 +550,22 @@ def get_vnfitter_results(vnFitter, secPeak, useRefl, useTempl):
     vn_results['fBkgFuncMass'] = vnFitter.GetMassBkgFitFunc()
     vn_results['fBkgFuncVn'] = vnFitter.GetVnVsMassBkgFitFunc()
     vn_results['fSgnFuncMass'] = vnFitter.GetMassSignalFitFunc()
+    vn_results['pulls'] = vnFitter.GetPullDistribution()
     
-    vn_results['fVnCompsFuncts'] = {}
-    vnComps = vnFitter.GetVnCompsFuncts()
-    vn_results['fVnCompsFuncts']['vnSgn'] = vnComps[0]
-    vn_results['fVnCompsFuncts']['vnBkg'] = vnComps[1]
     if secPeak:
         vn_results['fVnCompsFuncts']['vnSecPeak'] = vnComps[2]
-    vn_results['fMassTemplFuncts'] = vnFitter.GetMassTemplFuncts()
+    vn_results['fMassTemplFuncts'] = [] 
     if useTempl:
-        for iTempl in range(len(vn_results['fMassTemplFuncts'])):
-            vn_results['fVnCompsFuncts'][f'vnTempl{iTempl}'] = vnComps[2+secPeak+iTempl]
+        vn_results['fMassTemplTotFunc'] = vnFitter.GetMassTemplFitFunc()
+        vn_results['fMassTemplFuncts'] = vnFitter.GetMassTemplFuncts()
+    if DrawVnComps:
+        vn_results['fVnCompsFuncts'] = {}
+        vnComps = vnFitter.GetVnCompsFuncts()
+        vn_results['fVnCompsFuncts']['vnSgn'] = vnComps[0]
+        vn_results['fVnCompsFuncts']['vnBkg'] = vnComps[1]
+        if useTempl:
+            for iTempl in range(len(vn_results['fMassTemplFuncts'])):
+                vn_results['fVnCompsFuncts'][f'vnTempl{iTempl}'] = vnComps[2+secPeak+iTempl]
     
     bkg, bkgUnc = ctypes.c_double(), ctypes.c_double()
     vnFitter.Background(3, bkg, bkgUnc)
@@ -721,8 +748,6 @@ def get_refl_histo(reflFile, centMinMax, ptMins, ptMaxs):
 
     return True, hMCSgn, hMCRefl
 
-import yaml
-
 def get_particle_info(particleName):
     '''
     Get particle information
@@ -809,6 +834,7 @@ def get_cut_sets(npt_bins, sig_cut, bkg_cut_maxs, correlated_cuts=True):
     nCutSets = []
     sig_cuts_lower, sig_cuts_upper, bkg_cuts_lower, bkg_cuts_upper = {}, {}, {}, {}
     if correlated_cuts:
+        print(f"sig_cut: {sig_cut}")
         sig_cut_mins = sig_cut['min']
         sig_cut_maxs = sig_cut['max']
         sig_cut_steps = sig_cut['step']
@@ -825,6 +851,8 @@ def get_cut_sets(npt_bins, sig_cut, bkg_cut_maxs, correlated_cuts=True):
         bkg_cuts_upper = [[bkg_cut_maxs[iPt] for _ in range(nCutSets[iPt])] for iPt in range(npt_bins)]
 
     else:
+        print(f"npt_bins: {npt_bins}")
+        print(f"sig_cut: {sig_cut}")
         # load the signal cut
         sig_cuts_lower = [sig_cut[iPt]['min'] for iPt in range(npt_bins)]
         sig_cuts_upper = [sig_cut[iPt]['max'] for iPt in range(npt_bins)]
@@ -883,10 +911,10 @@ def get_cut_sets_config(config):
         bkg_cut_maxs = config['cut_variation']['uncorr_bdt_cut']['bkg_max']
 
     return get_cut_sets(len(ptmins), sig_cut, bkg_cut_maxs, correlated_cuts)
-
+    
 def cut_var_image_merger(config, cut_var_dir, suffix):
 
-    def pdf_to_images(pdf_path, dpi=100):
+    def pdf_to_images(pdf_path, dpi=300):
         """Extract high-quality images from a PDF."""
         doc = fitz.open(pdf_path)
         images = []
@@ -948,22 +976,138 @@ def cut_var_image_merger(config, cut_var_dir, suffix):
 
         print(f"Saved {num_pages} high-quality multipanel images in '{output_folder}'.")
 
-    cutvar_files = [
-        f"{cut_var_dir}/CutVarFrac/CutVarFrac_{suffix}_CorrMatrix.pdf", 
-        f"{cut_var_dir}/CutVarFrac/CutVarFrac_{suffix}_Distr.pdf", 
-        f"{cut_var_dir}/CutVarFrac/CutVarFrac_{suffix}_Eff.pdf", 
-        f"{cut_var_dir}/CutVarFrac/CutVarFrac_{suffix}_Frac.pdf",
-        f"{cut_var_dir}/V2VsFrac/FracV2_{suffix}.pdf"
-    ]
-    
+    def addV2VsFracToCutVarQA(folder, suffix, direction="horizontal"):
+        """
+        Adds a fifth panel to a 4-image figure.
+
+        :param four_panel_img: Path to the original 4-panel image (PNG).
+        :param new_img: Path to the new image to be added as the fifth panel.
+        :param output_img: Path to save the final 5-panel image.
+        :param direction: "horizontal" to append side-by-side, "vertical" to stack.
+        """
+        def get_files_starting_with(folder):
+            """ Get all files in a folder starting with a specific character """
+            search_pattern = os.path.join(f"{folder}/CutVarFrac/", "FinalResPt*.png")  # Pattern: 'A*'
+            files = glob.glob(search_pattern)
+            return files
+        
+        fraction_files = fitz.open(f"{folder}/V2VsFrac/FracV2_{suffix}.pdf")
+        cut_var_plots = get_files_starting_with(folder)
+        cut_var_plots_sorted = sorted(cut_var_plots, key=lambda x: (float(re.search(r'pt(\d+\.\d+)_(\d+\.\d+)', x).group(1)),
+                                                           float(re.search(r'pt(\d+\.\d+)_(\d+\.\d+)', x).group(2))))
+
+        for iPt, cut_var_pt_plot in enumerate(cut_var_plots_sorted):
+            img1 = Image.open(cut_var_pt_plot)
+            page = fraction_files[iPt]  # Get the first page
+            pix = page.get_pixmap(dpi=300)  # Convert to a high-res image
+            img2_path = f"temp_image_{iPt}.png"
+            pix.save(img2_path)  # Save the image temporarily
+            img2 = Image.open(img2_path)  # Open the temporary image file
+            os.remove(img2_path)  # Optionally, delete the temporary image file
+
+
+            # Ensure both images have the same height (for horizontal) or width (for vertical)
+            if direction == "horizontal":
+                img2 = img2.resize((img1.height, img1.height))  # Make square to match height
+                new_width = img1.width + img2.width
+                new_height = img1.height
+                new_img = Image.new("RGB", (new_width, new_height))
+                new_img.paste(img1, (0, 0))
+                new_img.paste(img2, (img1.width, 0))
+            else:  # Vertical stacking
+                img2 = img2.resize((img1.width, img1.width))  # Make square to match width
+                new_width = img1.width
+                new_height = img1.height + img2.height
+                new_img = Image.new("RGB", (new_width, new_height))
+                new_img.paste(img1, (0, 0))
+                new_img.paste(img2, (0, img1.height))
+
+            # Save the new image
+            os.makedirs(f"{folder}/merged_images/cutvar_summary", exist_ok=True)
+            new_img.save(f"{folder}/merged_images/cutvar_summary/CutVarV2Frac_pt_{int(config['ptmins'][iPt]*10)}_{int(config['ptmaxs'][iPt]*10)}.png")
+
+    # Example usage
+    if os.path.exists(f"{cut_var_dir}/merged_images/"):
+        shutil.rmtree(f"{cut_var_dir}/merged_images/")
+
+    # Recreate the folder
+    os.makedirs(f"{cut_var_dir}/merged_images/")
     try:
-        process_pdfs(config, cutvar_files, f"{cut_var_dir}/merged_images/cutvar", 'cutvar_summary')
+        print("Saving cut vars")
+        addV2VsFracToCutVarQA(f"{cut_var_dir}/", suffix)
+        image_paths = sorted(
+            glob.glob(os.path.join(f"{cut_var_dir}/merged_images/cutvar_summary/", "*.png")),
+            key=lambda x: tuple(map(int, re.findall(r'_([\d]+)_([\d]+)\.png$', x)[0])) if re.search(r'_([\d]+)_([\d]+)\.png$', x) else (0, 0)
+        )
+        images = [Image.open(img).convert("RGB") for img in image_paths]
+        images[0].save(f"{cut_var_dir}/merged_images/cutvar_summary/cutvarSummary.pdf", save_all=True, append_images=images[1:])
     except:
-        print("Error in merging cut variation files")
+        print("Error in merging cutvar files")
     
     try:
         fit_files = glob.glob(f"{cut_var_dir}/ry/*.pdf")
         fit_files_sorted = sorted(fit_files, key=lambda x: int(re.search(r"_(\d+)_D\w*.pdf$", x).group(1)))
         process_pdfs(config, fit_files_sorted, f"{cut_var_dir}/merged_images/fits/", 'fit_summary', 5)
+        image_paths = sorted(
+            glob.glob(os.path.join(f"{cut_var_dir}/merged_images/fits/", "*.png")),
+            key=lambda x: tuple(map(int, re.findall(r'_([\d]+)_([\d]+)\.png$', x)[0])) if re.search(r'_([\d]+)_([\d]+)\.png$', x) else (0, 0)
+        )
+        images = [Image.open(img).convert("RGB") for img in image_paths]
+        images[0].save(f"{cut_var_dir}/merged_images/fits/fitSummary.pdf", save_all=True, append_images=images[1:])
     except:
         print("Error in merging fit files")
+    
+
+def reweight_histo(histo, weights, histoname, specieweights=[]):
+    if specieweights != []:
+        if isinstance(histo, ROOT.TH2) and not isinstance(histo, ROOT.TH3):
+            for iBinX in range(1, histo.GetXaxis().GetNbins()+1):
+                for iBinY in range(1, histo.GetYaxis().GetNbins()+1):
+                    origContent = histo.GetBinContent(iBinX, iBinY)
+                    origError = histo.GetBinError(iBinX, iBinY)
+                    weight = specieweights[iBinY-1]
+                    content = origContent * weight
+                    error = origError * weight if weight > 0 else 0
+                    histo.SetBinContent(iBinX, iBinY, content)
+                    histo.SetBinError(iBinX, iBinY, error)
+            proj_hist = histo.ProjectionX(histoname, 0, histo.GetYaxis().GetNbins()+1, 'e')
+
+        if isinstance(histo, ROOT.TH3):
+            for iBinX in range(1, histo.GetXaxis().GetNbins()+1):
+                for iBinY in range(1, histo.GetYaxis().GetNbins()+1):
+                    for iBinZ in range(1, histo.GetZaxis().GetNbins()+1):
+                        binCentVal = histo.GetYaxis().GetBinCenter(iBinY)
+                        origContent = histo.GetBinContent(iBinX, iBinY, iBinZ)
+                        origError = histo.GetBinError(iBinX, iBinY, iBinZ)
+                        weight = specieweights[iBinZ-1]*weights(binCentVal) if weights(binCentVal) > 0 else specieweights[iBinZ-1] 
+                        content = origContent * weight
+                        error = origError * weight if weight > 0 else 0
+                        histo.SetBinContent(iBinX, iBinY, iBinZ, content)
+                        histo.SetBinError(iBinX, iBinY, iBinZ, error)
+            proj_hist = histo.ProjectionX(histoname, 0, histo.GetYaxis().GetNbins()+1,
+                                          0, histo.GetZaxis().GetNbins()+1, 'e')
+
+    else:
+        if isinstance(histo, ROOT.TH1) and not isinstance(histo, ROOT.TH2):
+            for iBin in range(1, histo.GetNbinsX()+1):
+                if histo.GetBinContent(iBin) > 0.:
+                    relStatUnc = histo.GetBinError(iBin) / histo.GetBinContent(iBin)
+                    ptCent = histo.GetBinCenter(iBin)
+                    histo.SetBinContent(iBin, histo.GetBinContent(iBin) * weights(ptCent))
+                    histo.SetBinError(iBin, histo.GetBinContent(iBin) * relStatUnc)
+            proj_hist = histo.Clone(histoname)
+        if isinstance(histo, ROOT.TH2) and not isinstance(histo, ROOT.TH3):
+            for iBinX in range(1, histo.GetXaxis().GetNbins()+1):
+                for iBinY in range(1, histo.GetYaxis().GetNbins()+1):
+                    binCentVal = histo.GetYaxis().GetBinCenter(iBinY)
+                    origContent = histo.GetBinContent(iBinX, iBinY)
+                    origError = histo.GetBinError(iBinX, iBinY)
+                    weight = weights(binCentVal) if weights(binCentVal) > 0 else 0
+                    content = origContent * weight
+                    error = origError * weight if weight > 0 else 0
+                    histo.SetBinContent(iBinX, iBinY, content)
+                    histo.SetBinError(iBinX, iBinY, error)
+            proj_hist = histo.ProjectionX(histoname, 0, histo.GetYaxis().GetNbins()+1, 'e')
+        
+    return proj_hist
+
