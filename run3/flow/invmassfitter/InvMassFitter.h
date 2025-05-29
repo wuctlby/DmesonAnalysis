@@ -101,14 +101,14 @@ class InvMassFitter : public TNamed {
     fFixRflOverSig=kTRUE;
   }
   void SetSmoothReflectionTemplate(Bool_t opt){fSmoothRfl=opt;}
-  void SetTemplates(int anchormode, std::vector<Double_t> relcombweights, std::vector<std::string> templsnames, std::vector<const TH1*> histotempl,
+void SetTemplates(int anchormode, std::vector<Double_t> relcombweights, std::vector<std::string> templsnames, std::vector<const TH1*> histotempl,
                     std::vector<Double_t> initweights, std::vector<Double_t> minweights, std::vector<Double_t> maxweights) {
     
     // TFile* file = new TFile("templates_from_roofit_massfitter.root", "RECREATE");
 
     for (int iTempl = 0; iTempl < histotempl.size(); ++iTempl) {
-      file->mkdir(Form("Template_%i", iTempl));
-      file->cd(Form("Template_%i", iTempl));
+      // file->mkdir(Form("Template_%i", iTempl));
+      // file->cd(Form("Template_%i", iTempl));
       
       // Set fMassVar range and binning to match histogram
       Double_t xmin = histotempl[iTempl]->GetXaxis()->GetXmin();
@@ -164,7 +164,7 @@ class InvMassFitter : public TNamed {
       std::cout << "PDF value at mass = " << xval << " is: " << pdfVal << std::endl;
     }
     
-    file->Close();
+    // file->Close();
     std::cout << "SetTemplatesHisto VnVsMassFitter ended" << std::endl;
                   
     fMassInitWeights=initweights;
