@@ -151,6 +151,7 @@ def get_sigma(preFiles, config_pre, centrality, resolution, outputDir, skip_proj
     os.system(f'{command}')
 
 def process_pt_bin_Singlecut(iPt, ptmin, ptmax, centMin, centMax, config, bkg_max_cuts, sig_mins, sig_maxs, thnsparse_list, sparse_axes, axestokeep, outputDir):
+def process_pt_bin_Singlecut(iPt, ptmin, ptmax, centMin, centMax, config, bkg_max_cuts, sig_mins, sig_maxs, thnsparse_list, sparse_axes, axestokeep, outputDir):
 
     print(f'Processing pT bin {ptmin} - {ptmax}, cent {centMin}-{centMax}')
 
@@ -164,6 +165,7 @@ def process_pt_bin_Singlecut(iPt, ptmin, ptmax, centMin, centMax, config, bkg_ma
         temp_thn_projs = []
         for iSig, (sig_min, sig_max) in enumerate(zip(sig_mins, sig_maxs)):
             temp_cloned_sparse = cloned_sparse.Clone()
+            temp_cloned_sparse.GetAxis(sparse_axes['Flow']['score_bkg']).SetRangeUser(0, bkg_max_cuts[iSig])
             temp_cloned_sparse.GetAxis(sparse_axes['Flow']['score_bkg']).SetRangeUser(0, bkg_max_cuts[iSig])
             temp_cloned_sparse.GetAxis(sparse_axes['Flow']['score_FD']).SetRangeUser(sig_min, sig_max)
             temp_thn_projs.append(temp_cloned_sparse.Projection(len(axestokeep), array.array('i', [sparse_axes['Flow'][axtokeep] for axtokeep in axestokeep]), 'O'))
