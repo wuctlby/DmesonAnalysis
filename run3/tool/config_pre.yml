@@ -1,34 +1,41 @@
 ### input files to be preprocessed
 flow_files: [
-  /path/to/AnRes_0.root,
-  /path/to/AnRes_1.root,
-  /path/to/AnRes_2.root,
-  /path/to/AnRes_3.root,
-  /path/to/AnRes_4.root,
-  /path/to/AnRes_5.root,
-  /path/to/AnRes_6.root,
-  /path/to/AnRes_7.root,
-  /path/to/AnRes_8.root,
-  /path/to/AnRes_9.root,
-  /path/to/AnRes_10.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_0.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_1.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_2.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_3.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_4.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_5.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_6.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_7.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_8.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_9.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_10.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_11.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_12.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_13.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_14.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_15.root,
+       /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Pass1/414423/temp_merged_s2_16.root
 ]
 
 # pt ranges to be skimmed
-ptmins: [0.0,0.5,1.0,1.5]
-ptmaxs: [0.5,1.0,1.5,2.0]
+ptmins: [0.5, 1,    1.5,  2,    2.5,  3,    3.5,  4,    5,    6,    7,    8,    10,   12,   16]
+ptmaxs: [1,   1.5,  2,    2.5,  3,    3.5,  4,    5,    6,    7,    8,    10,   12,   16,   24]
 
 # centrality class
-centrality: 'k3040'
+centrality: 'k3050'
 # output directory for preprocessed files
-skim_out_dir: '/Users/mcosti/Analysis/Datasets/3050/skim3040bkgstrict'
-# bkg cuts, cut is applied then bkg axis is dropped
-bkg_cuts: [0.002, 0.002, 0.002, 0.006]
+skim_out_dir: '/home/wuct/ALICE/local/Results/pre/k3050_2024_corrPID/'
+# bkg cuts, cut is applied then bkg axis is dropped. -1 means no cut
+bkg_cuts: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, -1, -1, -1, -1, -1, -1, -1, -1]
 
-# var names of axes to keep + rebin factors
-axestokeep: ['Mass', 'sp', 'score_FD', 'Pt', 'cent']
+# var names of axes to keep + rebin factors, -1 means no rebin
+axestokeep: ['Mass', 'Pt', 'cent','sp', 'score_bkg', 'score_FD']
 RebinSparse:
-       Mass: 2
-       sp: 1
-       score_FD: 10
+       Mass: -1
+       sp: -1
+       score_bkg: -1
+       score_FD: -1
        Pt: 1
-       cent: 1
+       cent: -1

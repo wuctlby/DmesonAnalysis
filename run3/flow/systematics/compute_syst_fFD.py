@@ -3,7 +3,8 @@ import os
 import numpy as np
 import argparse
 import yaml
-from ROOT import TFile, TCanvas, kFullSquare, kBlack, kOrange, kAzure, kGray, kRed, TLegend, kCyan, kSpring, kGreen, kBlue, kMagenta, kFullCircle, TGraphErrors, TH1F, gROOT
+import array
+from ROOT import TFile, TCanvas, kFullSquare, kBlack, kOrange, kAzure, kGray, kRed, TLegend, kCyan, kSpring, kGreen, kBlue, kMagenta, kFullCircle, TGraphErrors, TH1F, TMultiGraph
 sys.path.append('../../../')
 from utils.StyleFormatter import SetGlobalStyle, SetObjectStyle
 
@@ -13,7 +14,6 @@ cols = [kBlack, kOrange+1, kAzure+4, kRed+1, kCyan+2, kGreen+2, kBlue-4, kMagent
 labels = ['default', 'random', 'even', 'odd', 'step1', 'step2', 'minus3low', 'minus3high', 'minus3']
 
 def get_hdeltav(href, hsyst):
-    gROOT.SetBatch(True)
     hdelta = hsyst.Clone()
     hdelta.Reset()
     hdelta.SetDirectory(0)
@@ -24,7 +24,6 @@ def get_hdeltav(href, hsyst):
     return hdelta
 
 def get_rms_shift(histsdeltav2):
-    gROOT.SetBatch(True)
     gsyst = TGraphErrors(-1)
     SetObjectStyle(gsyst, color=kAzure+2, fillcolor=kAzure+2, linewidth=0, fillalpha=0.2, linestyle=8, fillstyle=3154)
     for ibin in range(1, histsdeltav2[0].GetNbinsX()+1):
@@ -34,13 +33,12 @@ def get_rms_shift(histsdeltav2):
         #hsyst.Draw()
         gsyst.SetPoint(ibin, histsdeltav2[0].GetBinCenter(ibin), 0)
         gsyst.SetPointError(ibin, histsdeltav2[0].GetBinWidth(ibin)/2, np.sqrt(hsyst.GetRMS()**2 + hsyst.GetMean()**2))
-        #print(f'(pT cent: {histsdeltav2[0].GetBinCenter(ibin)}) Syst = {np.sqrt(hsyst.GetRMS()**2 + hsyst.GetMean()**2)}, rms = {hsyst.GetRMS()}, mu = {hsyst.GetMean()}')
+        print(f'(pT cent: {histsdeltav2[0].GetBinCenter(ibin)}) Syst = {np.sqrt(hsyst.GetRMS()**2 + hsyst.GetMean()**2)}, rms = {hsyst.GetRMS()}, mu = {hsyst.GetMean()}')
 
     return gsyst
 
 
 def compute_syst(infiles, outputdir, suffix):
-    gROOT.SetBatch(True)
     #______________________________________________________________________________________
     # Collect all .root files
     hv2_prompt = []
@@ -152,7 +150,7 @@ def compute_syst(infiles, outputdir, suffix):
 
     #______________________________________________________________________________________
     # Save output
-    suffix = 'default'
+    os.makedirs(outputdir, exist_ok=True)
     outputfile = os.path.join(outputdir, f'syst_fFD_{suffix}.root')
     outfile = TFile(outputfile, 'RECREATE')
     canv.Write()
@@ -162,7 +160,60 @@ def compute_syst(infiles, outputdir, suffix):
     canv.SaveAs(f'{outputdir}/SystfFD_{suffix}.pdf')
     canv.SaveAs(f'{outputdir}/SystfFD_{suffix}.png')
 
+def check_frac_variation_range(infiles, outputdir):
+    
+    # get pt bins from first file
+    tfile_forptbins = TFile.Open(infiles[0])
+    ptmins = []
+    ptmaxs = []
+    hRef = tfile_forptbins.Get('hV2VsPtPrompt')
+    for ibin in range(1, hRef.GetNbinsX()+1):
+        ptmins.append(int(hRef.GetXaxis().GetBinLowEdge(ibin) * 10))  # Convert to integer
+        ptmaxs.append(int((hRef.GetXaxis().GetBinLowEdge(ibin) + hRef.GetXaxis().GetBinWidth(ibin)) * 10))
 
+    cAllPtFracs = []
+    gSinglePtAllFracs = [] 
+    legends = []
+    
+    for iPt, (ptmin, ptmax) in enumerate(zip(ptmins, ptmaxs)):
+        cAllPtFracs.append(TCanvas(f"cFrac_pt_{ptmin}_{ptmax};cutset;fFD", "", 800, 600))
+        gSinglePtAllFracs.append(TMultiGraph(f"gFrac_pt_{ptmin}_{ptmax};cutset;fFD", ""))
+        legends.append(TLegend(0.7, 0.7, 0.9, 0.9))  # Legend position
+
+    for ifile, file in enumerate(infiles):
+        tfile = TFile.Open(file)
+        if not tfile or tfile.IsZombie():
+            print(f"Error: Cannot open file {file}")
+            continue
+        
+        for iPt, (ptmin, ptmax) in enumerate(zip(ptmins, ptmaxs)):
+            gFracPt = tfile.Get(f'pt_{ptmin}_{ptmax}/gV2VsFrac')
+            x_values = gFracPt.GetX()
+            frac_values = [x_values[i] for i in range(gFracPt.GetN())]
+
+            graph = TGraphErrors(gFracPt.GetN(), array.array('d', range(len(frac_values))), array.array('d', frac_values))
+            graph.SetMarkerColor(ifile + 1)  # Different color for each file
+            graph.SetLineColor(ifile + 1)
+            graph.SetLineWidth(2)
+            graph.SetMarkerStyle(20)
+
+            gSinglePtAllFracs[iPt].Add(graph, "LP")
+            legends[iPt].AddEntry(graph, os.path.basename(file).replace("V2VsFrac_", "").replace(".root", ""), "LP")
+
+    # Save to ROOT file
+    os.makedirs(outputdir, exist_ok=True)
+    FracScanFile = TFile(f'{outputdir}/FracVariations.root', 'recreate')
+    for iPt, (ptmin, ptmax) in enumerate(zip(ptmins, ptmaxs)):
+        FracScanFile.mkdir(f"pt_{ptmin}_{ptmax}")
+        FracScanFile.cd(f"pt_{ptmin}_{ptmax}")
+        cAllPtFracs[iPt].cd()
+        gSinglePtAllFracs[iPt].Draw("A")
+        legends[iPt].Draw()
+        gSinglePtAllFracs[iPt].Write()
+        cAllPtFracs[iPt].SetLogy()
+        cAllPtFracs[iPt].Write()
+
+    FracScanFile.Close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Arguments')
@@ -176,3 +227,5 @@ if __name__ == "__main__":
     compute_syst(args.infiles,
                  args.outputdir,
                  args.suffix)
+
+    check_frac_variation_range(args.infiles, args.outputdir)

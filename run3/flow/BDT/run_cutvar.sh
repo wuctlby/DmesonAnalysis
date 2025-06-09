@@ -15,13 +15,13 @@
 #- domergeimages (bool): perform cutvar images merging
 #----------
 
-export config_flow="/home/mdicosta/FlowDplus/FinalResults/templs_from_histo_parallel/config_3040_uncorrelated_templs_from_histo_parallel.yml"
-export usepreprocessed=True
+export config_flow="/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config/2024/k3050/config_flow_2024_small_ptsmearing1p5_vsphi_full_applied_bkg_1.yml"
+export usepreprocessed=False
 export docw=True
 export domy=True
 export doproj=True
 export doeff=True
-export dovn=True
+export dovn=False
 export dofcv=False
 export doddf=False
 export dov2vf=False

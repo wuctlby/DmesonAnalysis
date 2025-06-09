@@ -16,8 +16,8 @@
 
 # resutls will be saved in ${workdir}/Results/${dataCent}/${centrality}/${size}/
 scriptdir=$(dirname $0)
-workdir=path/to/DmesonAnalysis/run3/flow/
-config=path/to/config_flow.yml
+workdir=/home/wuct/ALICE/local/DmesonAnalysis
+config=/home/wuct/ALICE/local/DmesonAnalysis/run3/flow/config/config_flow_RESO.yml
 
 centrality=k3050 # k020 k3050 k6080  <-----------------------------------------------------------------------------------------------
 dataCent=2060 # 020 2050 50100   <---------------------------------------------------------------------------------------------------
@@ -27,17 +27,59 @@ qvec= # full recenter   <-------------------------------------------------------
 debug= #_old #_new #_tot
 
 wagon_id= # 13649 14351 13650 14352    <---------------------------------------------------------------------------------------
-doReso=false # false true    <-------------------------------------------------------------------------------------------------------
+doReso=true # false true    <-------------------------------------------------------------------------------------------------------
 doProj=false # false true
 
-an_res_file="path/to/AnRes_0.root \
-path/to/AnRes_1.root \
-path/to/AnRes_2.root \
-path/to/AnRes_3.root \
-path/to/AnRes_4.root \
-path/to/AnRes_5.root \
-path/to/AnRes_6.root \
-path/to/AnRes_7.root
+an_res_file="/media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_0.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_1.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_2.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_3.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_4.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_5.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_6.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_7.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_8.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_9.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_10.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_11.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_12.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_13.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_14.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_15.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_16.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_17.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_18.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_19.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_20.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_21.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_22.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_23.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_24.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_25.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_26.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_27.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_28.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_29.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_30.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_31.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_32.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_33.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_34.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_35.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_36.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_37.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_38.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_39.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_40.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_41.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_42.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_43.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_44.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_45.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_46.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_47.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_48.root \ 
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_49.root
 "
 
 resolution=path/to/resolution.root

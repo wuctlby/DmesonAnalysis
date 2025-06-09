@@ -6,25 +6,26 @@
 ########################################
 
 # Default cut variation path (uncorrected)
-export cutvar_default="/home/wuct/ALICE/local/Results/test/flow/systematics/combined/cutvar_combine/V2VsFrac"
+export cutvar_default="/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_combined/V2VsFrac"
 
 # Array of systematic variation paths (e.g., for "random" and "even" variations)
 cutvar_systvariation_paths=(
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/random"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/even"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/odd"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/1in4"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/1in3"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/minus3low"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/minus3high"
-  "/home/wuct/ALICE/local/Results/test/cutvar_fd/Syst/minus3"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/random"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/even"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/odd"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/1in4"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/1in3"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/minus3low"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/minus3high"
+  "/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr/Syst/minus3"
 )
 
 # Other important paths
-export corrPath="/home/wuct/ALICE/local/Results/test/flow/systematics/pre/cutvar_correlated"
-export uncorrPath="/home/wuct/ALICE/local/Results/test/flow/systematics/pre/cutvar_combine"
-export output_dir="/home/wuct/ALICE/local/Results/test/flow"  # Output directory for results
-export config="/home/wuct/ALICE/local/Results/test/flow/systematics/config_sys/config_default.yml"
+export corrPath="/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_corr"
+export uncorrPath="/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/pre_sys/cutvar_uncorr"
+export output_dir="/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/syst_fdfrac"  # Output directory for results
+export suffix="k6080"
+export config="/home/wuct/ALICE/local/Results/BDT/k6080/third/syst/config_sys/reference/config_combined.yml"
 export n_parallel=10  # Number of parallel jobs
 
 ########################################
@@ -122,6 +123,5 @@ done
 # Disable recursive globbing if no longer needed
 shopt -u globstar
 
-cd ../BDT/ || { echo "Failed to change directory to ../BDT/"; exit 1; }
 echo "Running python3 compute_syst_fFD.py -s $cutvar_systvariation_paths -o $output_dir"
-python3 compute_syst_fFD.py ${all_v2_files[@]} -s $cutvar_systvariation_paths -o $output_dir
+python3 compute_syst_fFD.py ${all_v2_files[@]} -s $suffix -o $output_dir

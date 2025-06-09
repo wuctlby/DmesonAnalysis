@@ -1,3 +1,12 @@
+import sys
+import argparse
+import ROOT
+from flow_analysis_utils import get_resolution, get_centrality_bins, getListOfHisots
+sys.path.append('../../')
+from utils.StyleFormatter import SetObjectStyle, SetGlobalStyle
+SetGlobalStyle(padleftmargin=0.15, padbottommargin=0.15,
+               padrightmargin=0.15, titleoffsety=1.1, maxdigits=3, titlesizex=0.03,
+               labelsizey=0.04, setoptstat=0, setopttitle=0, palette=ROOT.kGreyScale)
 '''
 Script to project the MC distributions and apply the pt weights from the AnRes.root of Dtask
 python3 proj_thn_mc.py config_flow.yml config_cutset.yml -o path/to/output -s text
@@ -19,6 +28,31 @@ from flow_analysis_utils import get_vn_versus_mass, get_centrality_bins
 
 ### please fill your path of DmesonAnalysis
 sys.path.append('../../..')
+
+centrality = 'k3050'
+detA = 'FT0c'
+detB = 'FV0a'
+detC = 'TPCtot'
+
+def proj_reso(config_flow):
+    with open(config_flow, 'r') as f:
+        config = yaml.safe_load(f)
+        
+    reso_fils = config['anresdir']
+    
+    
+
+
+    pass
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Arguments")
+    parser.add_argument("config", metavar="text",
+                        default="config.yaml", help="flow configuration file")
+    
+    proj_reso(
+        config_flow = parser.parse_args().config
+    )
 
 def proj_data(sparse_flow, ptMin, ptMax, cent_min, cent_max, axes, inv_mass_bins, reso, syst=False):
 
@@ -97,21 +131,9 @@ def proj_mc_reco(config, ptWeights, ptWeightsB, Bspeciesweights, sPtWeights, sPt
         for iBin in range(1, hPtPrompt.GetNbinsX()+1):
             if hPtPrompt.GetBinContent(iBin) > 0.:
                 relStatUnc = hPtPrompt.GetBinError(iBin) / hPtPrompt.GetBinContent(iBin)
-                # hPtPrompt.GetBinError(iBin) ==> Error_original
-                # hPtPrompt.GetBinContent(iBin) ==> Content_original
-                
                 ptCent = hPtPrompt.GetBinCenter(iBin)
-                
-                hPtPrompt.SetBinContent(iBin, hPtPrompt.GetBinContent(iBin) * sPtWeights(ptCent)) 
-                # the bin content is rewritten and multiplied by the pt weight
-                # ==> Content_weighted = Content_original * ptWeight
-                
+                hPtPrompt.SetBinContent(iBin, hPtPrompt.GetBinContent(iBin) * sPtWeights(ptCent))
                 hPtPrompt.SetBinError(iBin, hPtPrompt.GetBinContent(iBin) * relStatUnc)
-                # hPtPrompt.GetBinContent(iBin) is already multiplied by the pt weight, it should be Content_weighted
-                # so hPtPrompt.GetBinContent(iBin) * relStatUnc ==> Error_weighted = Content_weighted * Error_original / Content_original
-                # ==> Error_weighted = Content_original * ptWeight * Error_original / Content_original
-                # ==> Error_weighted = ptWeight * Error_original
-
         ### initially use prompt weights for FD, eventually overwrite
         hPtFD = sparsesReco['RecoFD'].Projection(axes['RecoFD']['Pt'])
         hPtFD.SetName(f'hFDPt_{ptMin}_{ptMax}')
@@ -364,33 +386,6 @@ def pt_weights_info(ptweights, ptweightsB):
     
     return ptWeights, ptWeightsB, Bspeciesweights, sPtWeights, sPtWeightsB
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Arguments")
-    parser.add_argument("config", metavar="text",
-                        default="config.yaml", help="flow configuration file")
-    parser.add_argument('cutsetConfig', metavar='text',
-                        default='cutsetConfig.yaml', help='cutset configuration file')
-    parser.add_argument('anres_dir', metavar='text', 
-                        nargs='*', help='input ROOT files with anres')
-    parser.add_argument('--preprocessed', action='store_true', 
-                        help='Determines whether the sparses are pre-processed')
-    parser.add_argument("--proj_mc", action="store_true",
-                        help="project MC distributions")
-    parser.add_argument("--systematics", action="store_true",
-                        help="cutset based AnRes files")
-    parser.add_argument("--ptweights", "-w", metavar="text", nargs=2, required=False,
-                        default=[], help="path to pt weights file and histogram name")
-    parser.add_argument("--ptweightsB", "-wb", metavar="text", nargs=2, required=False,
-                        default=[], help="path to pt weightsB file and histogram name")
-    parser.add_argument("--centrality", "-c", metavar="text",
-                        default="k3050", help="centrality class")
-    parser.add_argument("--resolution", "-r", metavar="text",
-                        default="reso.root", help="resolution file")
-    parser.add_argument("--outputdir", "-o", metavar="text",
-                        default=".", help="output directory")
-    parser.add_argument("--suffix", "-s", metavar="text",
-                        default="", help="suffix for output files")
-    args = parser.parse_args()
 
     with open(args.config, 'r') as ymlCfgFile:
         config = yaml.load(ymlCfgFile, yaml.FullLoader)
@@ -521,3 +516,119 @@ if __name__ == "__main__":
     
     outfile.Close()
     outfile.Close()
+
+ROOT.gROOT.SetBatch(False)
+
+# TODO: move this to the StyleFormatter
+def SetFrameStyle(hFrame, xtitle, ytitle, ytitleoffset, ytitlesize, ylabelsize,
+                  ylabeloffset, xticklength, yticklength, xtitlesize, xlabelsize,
+                  xtitleoffset, xlabeloffset, ydivisions, xmoreloglabels, ycentertitle, ymaxdigits):
+    hFrame.GetXaxis().SetTitle(xtitle)
+    hFrame.GetYaxis().SetTitle(ytitle)
+    hFrame.GetYaxis().SetTitleOffset(ytitleoffset)
+    hFrame.GetYaxis().SetTitleSize(ytitlesize)
+    hFrame.GetYaxis().SetLabelSize(ylabelsize)
+    hFrame.GetYaxis().SetLabelOffset(ylabeloffset)
+    hFrame.GetXaxis().SetTickLength(xticklength)
+    hFrame.GetYaxis().SetTickLength(yticklength)
+    hFrame.GetXaxis().SetTitleSize(xtitlesize)
+    hFrame.GetXaxis().SetLabelSize(xlabelsize)
+    hFrame.GetXaxis().SetTitleOffset(xtitleoffset)
+    hFrame.GetXaxis().SetLabelOffset(xlabeloffset)
+    hFrame.GetYaxis().SetNdivisions(ydivisions)
+    hFrame.GetXaxis().SetMoreLogLabels(xmoreloglabels)
+    hFrame.GetYaxis().CenterTitle(ycentertitle)
+    hFrame.GetYaxis().SetMaxDigits(ymaxdigits)
+
+def compute_reso(an_res_file, vn_method,
+                 centClass, wagon_id, outputdir, suffix):
+
+    _, cent_min_max = get_centrality_bins(centClass)
+    histos_triplets, histos_triplets_lables = getListOfHisots(an_res_file, wagon_id, vn_method)
+
+    # prepare output file
+    if vn_method == 'sp':
+        ytitle = 'Q^{A} Q^{B}'
+    elif vn_method == 'ep' or vn_method == 'deltaphi':
+        ytitle = 'cos(2(#Psi^{A}-#Psi^{B}))'
+    else:
+        sys.exit('\033[91mFATAL: Invalid vn_method. Only sp, ep, deltaphi implemented. Exit!\033[0m')
+    outfile_name = f'{outputdir}reso{vn_method}{suffix}.root'
+    outfile = ROOT.TFile(outfile_name, 'RECREATE')
+
+    # loop over all possible combinations of detectors
+    latex = ROOT.TLatex()
+    latex.SetNDC()
+    latex.SetTextSize(0.05)
+    for i, (histo_triplet, histo_triplet_label) in enumerate(zip(histos_triplets, histos_triplets_lables)):
+        histos_mean, histos_mean_deltacent, histo_reso, histo_reso_deltacent = get_resolution(histo_triplet,
+                                                                                              histo_triplet_label,
+                                                                                              cent_min_max)
+        detA_label = histo_triplet_label[0]
+        detB_label = histo_triplet_label[1]
+        detC_label = histo_triplet_label[2]
+        outfile.cd()
+        outfile.mkdir(f'{detA_label}_{detB_label}_{detC_label}')
+        outfile.cd(f'{detA_label}_{detB_label}_{detC_label}')
+        canvas = ROOT.TCanvas(f'canvas_{detA_label}_{detB_label}_{detC_label}',
+                              f'canvas_{detA_label}_{detB_label}_{detC_label}',
+                              2400, 800)
+        canvas.Divide(3, 1)
+        leg = ROOT.TLegend(0.2, 0.2, 0.5, 0.3)
+        leg.SetBorderSize(0)
+        leg.SetFillStyle(0)
+        leg.SetTextSize(0.03)
+        for i, (hist_det, hist_mean, histo_mean_deltacent) in enumerate(zip(histo_triplet,
+                                                                            histos_mean,
+                                                                            histos_mean_deltacent)):
+            SetObjectStyle(hist_mean, color=ROOT.kRed, markerstyle=ROOT.kFullCircle,
+                           markersize=1, fillstyle=0, linewidth=2)
+            SetObjectStyle(histo_mean_deltacent, color=ROOT.kBlue, markerstyle=ROOT.kOpenCircle,
+                           markersize=1, fillstyle=0, linestyle=2, linewidth=3)
+            canvas.cd(i+1)
+            canvas.cd(i+1).SetLogz()
+            hFrame = canvas.cd(i+1).DrawFrame(0, -2, 100, 2)
+            SetFrameStyle(hFrame,
+                          xtitle='Cent. FT0c (%)',
+                          ytitle=ytitle,
+                          ytitleoffset=1.15,
+                          ytitlesize=0.05,
+                          ylabelsize=0.04,
+                          ylabeloffset=0.01,
+                          xticklength=0.04,
+                          yticklength=0.03,
+                          xtitlesize=0.05,
+                          xlabelsize=0.04,
+                          xtitleoffset=1.1,
+                          xlabeloffset=0.020,
+                          ydivisions=406,
+                          xmoreloglabels=True,
+                          ycentertitle=True,
+                          ymaxdigits=5)
+            hist_det.Draw('same colz')
+            histo_mean_deltacent.Draw('same pl')
+            hist_mean.Draw('same pl')
+            if i == 0:
+                leg.AddEntry(hist_mean, 'Average 1% centrality', 'lp')
+                leg.AddEntry(histo_mean_deltacent,
+                             f'Average {cent_min_max[1]-cent_min_max[0]}% centrality', 'lp')
+                leg.Draw()
+                latex.DrawLatex(0.2, 0.85, f'A: {detA_label}, B: {detB_label}')
+            elif i == 1:
+                latex.DrawLatex(0.2, 0.85, f'A: {detA_label}, B: {detC_label}')
+            else:
+                latex.DrawLatex(0.2, 0.85, f'A: {detB_label}, B: {detC_label}')
+            histo_mean_deltacent.Write()
+            hist_mean.Write()
+            hist_det.Write()
+        canvas.Update()
+        canvas.Write()
+        histo_reso.SetDirectory(outfile)
+        histo_reso_deltacent.SetDirectory(outfile)
+        histo_reso.Write()
+        histo_reso_deltacent.Write()
+        outfile.cd('..')
+
+    input('Resolutions computed. Press any key to continue')
+
+

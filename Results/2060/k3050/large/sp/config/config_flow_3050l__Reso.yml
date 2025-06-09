@@ -17,24 +17,59 @@ axes: {mass: 0,
 # cut variation general configurables
 centrality: 'k3050' # centrality class
 res_file: '/media/wuct/wulby/ALICE/AnRes/resolution/output_reso/resosp3050l_PASS4_full_PbPb_Reso.root' 
-out_dir: '/home/wuct/ALICE/local/Results/BDT/k3050/third'
-suffix: 'uncorr_free_sigma'
+out_dir: '/media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso'
+suffix: '2024'
 anresdir: [
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_5_10.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_10_15.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_15_20.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_20_25.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_25_30.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_30_35.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_35_40.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_40_50.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_50_60.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_60_70.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_70_80.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_80_100.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_100_120.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_120_160.root,
-  /home/wuct/ALICE/local/Results/pre/k3050/pre/AnRes/AnalysisResults_pt_160_240.root
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_0.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_1.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_2.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_3.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_4.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_5.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_6.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_7.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_8.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_9.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_10.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_11.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_12.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_13.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_14.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_15.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_16.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_17.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_18.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_19.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_20.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_21.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_22.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_23.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_24.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_25.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_26.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_27.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_28.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_29.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_30.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_31.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_32.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_33.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_34.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_35.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_36.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_37.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_38.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_39.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_40.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_41.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_42.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_43.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_44.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_45.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_46.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_47.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_48.root,
+  /media/wuct/wulby/ALICE/AnRes/D0_flow/2024/Reso/389979/temp_merged_s0_49.root,
 ]
 vn_method: 'sp'
 nworkers: 20 # workers to parallelize projections, efficiency and fitting
@@ -110,9 +145,9 @@ sig_ml_cuts: [0.6, 0.6, 0.6, 0.6, 0.6, 0.6]       # min probability for sig, one
 cut_variation:
        corr_bdt_cut:
               #         1      2      3      4      5      6      7      8      9      10     11     12     13     14     15
-              bkg_max: [0.002, 0.001, 0.001, 0.001, 0.001, 0.002, 0.002, 0.002, 0.003, 0.003, 0.006, 0.008, 0.01,  0.03,  0.06]
+              bkg_max: [0.002, 0.001, 0.001, 0.001, 0.001, 0.002, 0.002, 0.002, 0.003, 0.003, 0.006, 0.008, 0.01,  0.03,  0.05]
               sig: # the max value is not contained in the range
-                min:   [0.30,  0.20,  0.24,  0.16,  0.16,  0.16,  0.16,  0.15,  0.15,  0.08,  0.10,  0.08,  0.08,  0.06,  0.04]
+                min:   [0.30,  0.20,  0.24,  0.16,  0.16,  0.16,  0.16,  0.15,  0.15,  0.08,  0.10,  0.08,  0.08,  0.06,  0.10]
                 max:   [0.85,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96,  0.96]
                 step:  [0.03,  0.03,  0.03,  0.03,  0.03,  0.03,  0.03,  0.03,  0.03,  0.04,  0.04,  0.04,  0.04,  0.04,  0.04]
        uncorr_bdt_cut:
@@ -139,12 +174,12 @@ cut_variation:
                   max: [0.30, 0.39, 0.52, 0.82, 1.00] # max pt 2
                 - min: [0.00, 0.32, 0.42, 0.58, 0.90] # min pt 3
                   max: [0.32, 0.42, 0.58, 0.90, 1.00] # max pt 3
-                - min: [0.00, 0.28, 0.40, 0.50, 0.90] # min pt 4
-                  max: [0.28, 0.40, 0.50, 0.90, 1.00] # max pt 4
+                - min: [0.00, 0.27, 0.35, 0.48, 0.82] # min pt 4
+                  max: [0.27, 0.35, 0.48, 0.82, 1.00] # max pt 4
                 - min: [0.00, 0.28, 0.40, 0.50, 0.90] # min pt 5
                   max: [0.28, 0.40, 0.50, 0.90, 1.00] # max pt 5
-                - min: [0.00, 0.22, 0.30, 0.45, 0.90] # min pt 6
-                  max: [0.22, 0.30, 0.45, 0.90, 1.00] # max pt 6
+                - min: [0.00, 0.22, 0.30, 0.45, 0.88] # min pt 6
+                  max: [0.22, 0.30, 0.45, 0.88, 1.00] # max pt 6
                 - min: [0.00, 0.22, 0.30, 0.45, 0.88] # min pt 7
                   max: [0.22, 0.30, 0.45, 0.88, 1.00] # max pt 7
                 - min: [0.00, 0.20, 0.32, 0.47, 0.92] # min pt 8
@@ -184,7 +219,7 @@ minimisation:
                 [22,23,24,25,26], # pt 12
                 [21,22,23,24,25,26], # pt 13
                 [21,22,23,24,25,26], # pt 14
-                [5,9], # pt 15
+                [21,22,23,24,25,26], # pt 15
     ]
     systematics: ['even', 'random', 'odd', 'minus3low', '1in3', '1in4', 'minus3high', 'minus3']
 
